@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+ * 다크모드 전략: "클래스 기반"
+ * ---------------------------------------------------------------------------
+ * Tailwind v4의 기본 `dark:`는 OS 설정(prefers-color-scheme)만 따라간다.
+ * 사용자가 직접 토글하려면 <html class="dark"> 를 켜고 끌 수 있어야 하므로
+ * dark 변형을 아래처럼 다시 정의한다.
+ *   &:where(.dark, .dark *) → .dark 자신과 그 후손 전부
+ *   :where()를 쓰는 이유: 명시도(specificity)를 0으로 만들어
+ *   다른 유틸리티와 우선순위 싸움이 나지 않게 하려고.
+ * ------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+ * 디자인 토큰
+ * ---------------------------------------------------------------------------
+ * @theme 안에 선언한 CSS 변수는 Tailwind가 "유틸리티 클래스"로 자동 확장해준다.
+ *   --color-accent-500  →  bg-accent-500 / text-accent-500 / border-accent-500 ...
+ *   --font-sans         →  font-sans
+ * 색을 하드코딩(bg-[#6366f1]) 하지 않고 토큰으로 두면
+ * 나중에 브랜드 컬러를 바꿀 때 이 파일 한 곳만 고치면 된다.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --font-sans:
+    'Pretendard Variable', Pretendard, ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 브랜드 강조색 (indigo 계열) */
+  --color-accent-50: #eef2ff;
+  --color-accent-100: #e0e7ff;
+  --color-accent-200: #c7d2fe;
+  --color-accent-300: #a5b4fc;
+  --color-accent-400: #818cf8;
+  --color-accent-500: #6366f1;
+  --color-accent-600: #4f46e5;
+  --color-accent-700: #4338ca;
+  --color-accent-800: #3730a3;
+  --color-accent-900: #312e81;
+  --color-accent-950: #1e1b4b;
+}
+
+/* ---------------------------------------------------------------------------
+ * 기본(base) 레이어
+ * ------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* 접근성: "동작 줄이기"(reduced motion)를 켠 사용자에게는 애니메이션을 끈다.
+     멀미(vestibular disorder)를 유발할 수 있어 WCAG가 권고하는 처리다. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-white text-zinc-600 antialiased;
+    @apply dark:bg-zinc-950 dark:text-zinc-400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-zinc-900 dark:text-zinc-50;
+    text-wrap: balance;
+  }
+
+  /* 해시 링크(#projects)로 점프할 때 고정 헤더에 제목이 가려지지 않게 여백 확보.
+     이게 없으면 "클릭했더니 제목이 헤더 뒤에 숨는" 흔한 버그가 난다. */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    @apply bg-accent-500/25;
+  }
+
+  /* 키보드 사용자에게만 보이는 포커스 링 (마우스 클릭 시에는 안 보임) */
+  :focus-visible {
+    @apply outline-accent-500 outline-2 outline-offset-2;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 반복되는 조합만 커스텀 유틸리티로 승격
+ * ---------------------------------------------------------------------------
+ * 주의: 유틸리티 추출은 "3번 이상 똑같이 반복될 때"만 하는 게 좋다.
+ * 너무 일찍 추출하면 Tailwind의 장점(HTML만 보고 스타일을 파악)이 사라진다.
+ * ------------------------------------------------------------------------- */
+@utility card {
+  @apply rounded-2xl border border-zinc-200 bg-white;
+  @apply dark:border-zinc-800 dark:bg-zinc-900/60;
+}
+
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+  @apply bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300;
+}

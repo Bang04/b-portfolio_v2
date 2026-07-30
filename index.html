@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>방은경 | Frontend Engineer Portfolio</title>
+    <meta
+      name="description"
+      content="데이터를 다루는 화면을 만드는 프론트엔드 엔지니어 방은경의 포트폴리오입니다."
+    />
+
+    <!-- 폰트: Pretendard(한글 가변 폰트) + JetBrains Mono(숫자/코드용)
+         preconnect 는 DNS/TLS 핸드셰이크를 미리 해둬서 폰트 로딩을 앞당긴다. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!--
+      FOUC(Flash Of Unstyled Content) 방지용 인라인 스크립트.
+      React가 마운트되기 *전에* <html>에 .dark 를 붙여야 한다.
+      React 안에서만 처리하면 첫 프레임에 흰 화면이 번쩍이는 현상이 생긴다.
+      이 스크립트는 반드시 <body> 렌더 전에 동기 실행되어야 하므로 인라인으로 둔다.
+    -->
+    <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
+            .matches
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark')
+          }
+        } catch (_) {
+          /* 시크릿 모드 등에서 localStorage 접근이 막혀도 페이지는 떠야 한다 */
+        }
+      })()
+    </script>
+
+    <!-- TODO(5단계): Open Graph / Twitter 카드 메타태그는 배포 단계에서 추가 -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
