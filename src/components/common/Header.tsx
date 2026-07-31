@@ -115,9 +115,16 @@ export function Header() {
           </a>
 
           {/* 데스크톱 내비게이션
-              섹션이 8개라 md(768px)에서는 로고·토글까지 한 줄에 들어가지 않는다.
+              항목이 10개라 md(768px)에서는 로고·토글까지 한 줄에 들어가지 않는다.
               브레이크포인트는 "기기"가 아니라 "레이아웃이 깨지는 지점"에서 잡는다.
-              그래서 md가 아니라 lg(1024px)를 기준으로 두었다. */}
+              그래서 md가 아니라 lg(1024px)를 기준으로 두었다.
+
+              ⚠️ 가로 폭이 거의 한계다. 컨테이너가 max-w-5xl(1024px) 고정이라
+              브레이크포인트를 xl로 올려도 넓어지지 않는다 — 늘릴 수 있는 건
+              항목 수나 라벨 길이뿐이다. 그래서 링크 좌우 패딩을 px-2.5에서
+              px-2로 줄여 'Architecture'(12자)·'Resume' 두 항목이 들어갈
+              자리를 만들었다. 여기서 항목을 더 늘려야 한다면 라벨을 줄이거나
+              하나를 빼야 한다. */}
           <nav
             aria-label="주요 섹션"
             className="hidden items-center gap-0.5 lg:flex"
@@ -130,7 +137,7 @@ export function Header() {
                   href={`#${item.id}`}
                   // aria-current 로 "현재 위치"를 보조기기에도 알린다.
                   aria-current={isActive ? 'true' : undefined}
-                  className={`rounded-lg px-2.5 py-2 text-[13px] font-medium transition ${
+                  className={`rounded-lg px-2 py-2 text-[13px] font-medium whitespace-nowrap transition ${
                     isActive
                       ? 'text-accent-600 dark:text-accent-400'
                       : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'

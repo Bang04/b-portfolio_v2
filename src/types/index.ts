@@ -165,7 +165,15 @@ export interface SkillCategory {
 }
 
 /* ===========================================================================
- * 03. Featured Project — 아키텍처
+ * 04. Architecture — 아키텍처 설계
+ * ---------------------------------------------------------------------------
+ * 원래 Featured Project 안의 "심화" 블록이었지만 독립 섹션으로 분리했다.
+ * 이유는 두 가지다.
+ *  1. 분량 — 결정 9개 + 다이어그램이 한 섹션(h2) 안의 곁가지로 들어가 있으면
+ *     대표 프로젝트 섹션의 스크롤이 끝나지 않는다. 읽는 사람은 어디까지가
+ *     "프로젝트 설명"이고 어디부터가 "설계 상세"인지 구분하지 못한다.
+ *  2. 목적지 — 아키텍처는 면접에서 가장 많이 파고드는 영역이라 링크로 바로
+ *     보낼 수 있어야 한다. 헤딩(h2) + 내비게이션 항목이 있어야 그게 가능하다.
  * ========================================================================= */
 
 /**
@@ -344,6 +352,9 @@ export interface FeaturedProject {
    *   techStack 무엇으로 했나
    *   features  어떤 문제를 어떻게 풀었나
    *   result    그래서 뭐가 달라졌나
+   *
+   * 설계 상세(architecture)는 여기 없다. 독립 섹션으로 분리했다 —
+   * 이유는 `ArchitectureSpec` 위의 주석 참고.
    */
   overview: string[]
   goals: ProjectGoal[]
@@ -351,8 +362,6 @@ export interface FeaturedProject {
   techStack: SkillCategory[]
   features: FeatureItem[]
   result: ProjectResult
-  /** 심화 — 위 6단계를 다 읽은 사람에게만 필요한 설계 상세 */
-  architecture: ArchitectureSpec
   links: ProjectLink[]
 }
 
@@ -495,7 +504,68 @@ export interface Project {
 }
 
 /* ===========================================================================
- * 08. Experience (경력 / 학력 / 자격 / 수상)
+ * 10. Resume Summary — 이력서 한 장 요약
+ * ---------------------------------------------------------------------------
+ * 이 섹션이 존재하는 이유
+ *  포트폴리오를 처음부터 끝까지 읽는 사람은 많지 않다. 대부분은 Hero에서
+ *  훑고, 관심이 가면 한두 섹션을 열어 보고, 결국 "그래서 이 사람 뭘 할 줄
+ *  아는가"를 스스로 요약해야 하는 상태로 끝난다. 그 요약을 읽는 사람에게
+ *  맡기면 대개 가장 인상적인 한 줄만 남고 나머지는 사라진다.
+ *
+ * Hero와 뭐가 다른가 (중복이 아닌 이유)
+ *  Hero는 "3초 안에 남길 인상"이고, 여기는 "이력서로 옮겨 적을 수 있는 사실"이다.
+ *  Hero의 keyword는 단어 + 짧은 증거지만, 여기 highlights는 그대로 복사해
+ *  이력서에 붙여 넣을 수 있는 완성된 문장이다. 용도가 다르므로 분리한다.
+ *
+ * `gaps` 를 타입에 넣은 이유
+ *  요약은 과장이 가장 쉽게 스며드는 자리다. 짧게 쓰다 보면 단서가 떨어져
+ *  나가고, 남은 문장은 실제보다 강해진다. 못 하는 것을 적을 칸을 타입에
+ *  강제해두면, 요약을 갱신할 때마다 경계선을 함께 갱신하게 된다.
+ *  면접에서 "이건 안 해보셨죠?"를 먼저 말하는 쪽이 언제나 유리하다.
+ * ========================================================================= */
+
+/** 사실 한 줄. 예: { term: '소속', desc: '아주엔지니어링 ICT팀' } */
+export interface ResumeFact {
+  term: string
+  desc: string
+}
+
+/**
+ * 핵심 역량 하나.
+ * `evidence` 를 필수로 둔다 — 근거를 못 대는 역량은 이 배열에 들어올 수 없다.
+ * (Hero의 `Keyword.proof` 와 같은 장치. 요약일수록 이 강제가 더 필요하다)
+ */
+export interface ResumeStrength {
+  id: string
+  label: string
+  evidence: string
+}
+
+/** 이력서에 그대로 옮겨 적을 수 있는 성과 문장 하나 */
+export interface ResumeHighlight {
+  id: string
+  text: string
+}
+
+/** 아직 없는 경험과 그에 대한 현재 상태 */
+export interface ResumeGap {
+  id: string
+  title: string
+  /** 어디까지 해봤고 지금 무엇을 하고 있는지 */
+  status: string
+}
+
+export interface ResumeSummary {
+  /** 한 문단 자기 정의. 이력서 맨 위 요약문에 해당한다. */
+  headline: string
+  facts: ResumeFact[]
+  strengths: ResumeStrength[]
+  highlights: ResumeHighlight[]
+  gaps: ResumeGap[]
+}
+
+/* ===========================================================================
+ * 11. Experience (경력 / 학력 / 자격 / 수상)
  * ========================================================================= */
 
 export type ExperienceKind = 'work' | 'education' | 'certificate' | 'award'
@@ -526,7 +596,7 @@ export interface Experience {
 }
 
 /* ===========================================================================
- * 09. Contact
+ * 12. Contact
  * ========================================================================= */
 
 export interface ContactConfig {
@@ -544,16 +614,21 @@ export interface ContactConfig {
  * 전체 묶음
  * ========================================================================= */
 
-/** portfolioData.ts 가 만족해야 하는 최상위 형태 */
+/**
+ * portfolioData.ts 가 만족해야 하는 최상위 형태.
+ * 키 순서 = 화면에 렌더되는 순서. 굳이 맞춰두면 이 타입 하나가 목차 역할을 한다.
+ */
 export interface PortfolioData {
   profile: Profile
   nav: NavItem[]
   featuredProject: FeaturedProject
+  architecture: ArchitectureSpec
   timeline: TimelineWeek[]
   challenges: Challenge[]
   performance: PerformanceSpec
   principles: Principle[]
   projects: Project[]
+  resume: ResumeSummary
   experiences: Experience[]
   contact: ContactConfig
 }

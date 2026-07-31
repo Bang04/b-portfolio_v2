@@ -2,7 +2,6 @@ import type { ComponentType, ReactNode } from 'react'
 import {
   AlertTriangle,
   ArrowDown,
-  ChevronRight,
   Code,
   Database,
   ExternalLink,
@@ -15,11 +14,9 @@ import {
 } from 'lucide-react'
 import { featuredProject } from '@/data/portfolioData'
 import { Section } from '@/components/common/Section'
-import { ArchitectureDiagram } from '@/components/common/ArchitectureDiagram'
 import { GithubIcon } from '@/components/common/BrandIcons'
 import type { BrandIconProps } from '@/components/common/BrandIcons'
 import type {
-  ArchitectureLayer,
   ProjectGoal,
   ProjectLinkType,
   SkillIconName,
@@ -82,7 +79,7 @@ const LEVEL_STYLES: Record<SkillLevel, { className: string; label: string }> = {
 /* ---------------------------------------------------------------------------
  * 하위 섹션 껍데기
  * ---------------------------------------------------------------------------
- * Featured Project 안에만 5개 블록이 들어간다. 매번 제목 마크업을 손으로 적으면
+ * Featured Project 안에만 6개 블록이 들어간다. 매번 제목 마크업을 손으로 적으면
  * 반드시 한 곳이 어긋나므로 여기서 한 번만 정의한다.
  * Section(h2) 아래에 오므로 제목 레벨은 h3다 — 시각적 크기가 아니라
  * 문서 구조를 기준으로 정해야 스크린리더의 목차 탐색이 망가지지 않는다.
@@ -93,7 +90,7 @@ function SubSection({
   description,
   children,
 }: {
-  /** '01'~'06'. 생략하면 본문 흐름 밖의 심화 블록으로 렌더된다. */
+  /** '01'~'06'. 선택형으로 남겨둔 건 번호 없는 블록이 다시 생길 여지 때문이다. */
   step?: string
   title: string
   description?: string
@@ -116,83 +113,6 @@ function SubSection({
       </div>
       {children}
     </div>
-  )
-}
-
-/* ---------------------------------------------------------------------------
- * 아키텍처 결정 카드
- * ---------------------------------------------------------------------------
- * <details>/<summary> 를 쓴 이유:
- *  - 결정이 8개이고 각각 이유·트레이드오프까지 있어 전부 펼치면 벽이 된다.
- *  - 하지만 접어두면 안 읽힐 위험이 있으므로 첫 카드는 열어둔다(defaultOpen).
- *    "이건 펼쳐지는 것"이라는 신호를 주는 게 목적이다.
- *  - 직접 useState로 만들 수도 있지만, 네이티브 요소는 키보드 조작·
- *    Ctrl+F 검색 시 자동 펼침·aria-expanded 를 브라우저가 알아서 해준다.
- *    같은 동작을 손으로 만들면 대개 그중 하나를 빠뜨린다.
- * ------------------------------------------------------------------------- */
-function ArchitectureCard({
-  layer,
-  defaultOpen,
-}: {
-  layer: ArchitectureLayer
-  defaultOpen: boolean
-}) {
-  return (
-    <details open={defaultOpen} className="card group/details p-0">
-      <summary className="flex cursor-pointer list-none items-start gap-3 p-5">
-        <ChevronRight
-          size={16}
-          aria-hidden="true"
-          className="text-accent-500 mt-0.5 shrink-0 transition-transform duration-200 group-open/details:rotate-90"
-        />
-        <div className="min-w-0">
-          <h4 className="text-[15px] font-bold">{layer.title}</h4>
-          <p className="mt-1 text-[13px] leading-relaxed text-zinc-500">
-            {layer.summary}
-          </p>
-        </div>
-      </summary>
-
-      <div className="space-y-4 border-t border-zinc-100 px-5 pt-5 pb-5 dark:border-zinc-800">
-        {/* 선택 → 이유 → 대가 순서. 이 순서가 곧 설계 설명의 문법이다. */}
-        <div>
-          <p className="mb-1.5 font-mono text-[11px] font-semibold tracking-wider text-zinc-400 uppercase">
-            Decision · 무엇을 택했나
-          </p>
-          <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {layer.decision}
-          </p>
-        </div>
-
-        {/* 이유 블록만 배경을 준다 — 이 섹션에서 가장 중요한 문단이기 때문이다. */}
-        <div className="border-accent-300 dark:border-accent-500/40 rounded-r-lg border-l-2 bg-zinc-50 py-3 pr-3 pl-4 dark:bg-zinc-800/40">
-          <p className="text-accent-700 dark:text-accent-400 mb-1.5 font-mono text-[11px] font-semibold tracking-wider uppercase">
-            Why · 왜 이렇게 했나
-          </p>
-          <p className="text-[13.5px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            {layer.reason}
-          </p>
-        </div>
-
-        <div>
-          <p className="mb-1.5 flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-zinc-400 uppercase">
-            <AlertTriangle size={11} aria-hidden="true" />
-            Trade-off · 무엇을 포기했나
-          </p>
-          <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {layer.tradeoff}
-          </p>
-        </div>
-
-        <ul className="flex flex-wrap gap-1.5 pt-1">
-          {layer.keywords.map((keyword) => (
-            <li key={keyword} className="chip font-mono text-[11px]!">
-              {keyword}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </details>
   )
 }
 
@@ -261,7 +181,6 @@ export function FeaturedProject() {
     techStack,
     features,
     result,
-    architecture,
     links,
   } = featuredProject
 
@@ -546,43 +465,21 @@ export function FeaturedProject() {
         </div>
       </SubSection>
 
-      {/* ── 심화: 프로젝트 아키텍처 ───────────────────────────────────
-          step 번호를 주지 않은 이유: 위 01~06은 프로젝트를 이해하는 데
-          필요한 최소 흐름이고, 아키텍처는 그걸 다 읽은 사람에게만 필요한
-          상세다. 같은 번호 체계에 넣으면 "여기까지 읽어야 한다"는
-          압박이 생기고, 이탈 지점이 앞당겨진다. */}
-      <div className="mt-20 border-t border-zinc-100 pt-4 dark:border-zinc-900">
-        <p className="font-mono text-[11px] tracking-[0.2em] text-zinc-400 uppercase">
-          Deep Dive
-        </p>
-      </div>
-
-      <SubSection
-        title="프로젝트 아키텍처"
-        description="무엇을 썼는지가 아니라, 왜 그렇게 나눴고 그 대가로 무엇을 포기했는지를 적었습니다."
-      >
-        <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
-          {architecture.summary}
-        </p>
-
-        <div className="space-y-3">
-          {architecture.layers.map((layer, index) => (
-            <ArchitectureCard
-              key={layer.id}
-              layer={layer}
-              // 첫 카드만 펼쳐둔다 — "이건 열리는 카드"라는 신호를 주기 위해서.
-              defaultOpen={index === 0}
-            />
-          ))}
-        </div>
-
-        <h4 className="mt-12 mb-1.5 text-base font-bold">Architecture Diagram</h4>
-        <p className="mb-5 text-[13.5px] leading-relaxed text-zinc-500">
-          이미지가 아니라 데이터로 정의했습니다. 다크모드에서 깨지지 않고, 구조가
-          바뀌면 배열 하나만 고치면 되며, 텍스트라서 검색과 스크린리더에도 잡힙니다.
-        </p>
-        <ArchitectureDiagram diagram={architecture.diagram} />
-      </SubSection>
+      {/* ── 다음 섹션으로 넘기는 다리 ─────────────────────────────────
+          아키텍처는 04 독립 섹션으로 분리했다. 여기서 끊긴 채 끝내면
+          "설계 얘기는 없나?"라는 인상으로 03이 마무리되므로,
+          한 줄로 다음 목적지를 알려준다. 섹션을 나눌 때 잊기 쉬운 처리다 —
+          나누는 순간 독자가 흐름을 잃을 지점이 하나 생기기 때문이다. */}
+      <p className="mt-16 border-t border-zinc-100 pt-8 text-[13.5px] text-zinc-500 dark:border-zinc-900">
+        이 결과를 만든 구조를 어떻게 나눴는지, 그 대가로 무엇을 포기했는지는{' '}
+        <a
+          href="#architecture"
+          className="text-accent-600 dark:text-accent-400 font-medium underline underline-offset-4"
+        >
+          아키텍처 설계
+        </a>
+        에서 이어집니다.
+      </p>
     </Section>
   )
 }
