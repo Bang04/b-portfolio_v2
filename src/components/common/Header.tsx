@@ -114,10 +114,13 @@ export function Header() {
             <span className="text-accent-500">.dev</span>
           </a>
 
-          {/* 데스크톱 내비게이션 */}
+          {/* 데스크톱 내비게이션
+              섹션이 8개라 md(768px)에서는 로고·토글까지 한 줄에 들어가지 않는다.
+              브레이크포인트는 "기기"가 아니라 "레이아웃이 깨지는 지점"에서 잡는다.
+              그래서 md가 아니라 lg(1024px)를 기준으로 두었다. */}
           <nav
             aria-label="주요 섹션"
-            className="hidden items-center gap-1 md:flex"
+            className="hidden items-center gap-0.5 lg:flex"
           >
             {nav.map((item) => {
               const isActive = active === item.id
@@ -127,7 +130,7 @@ export function Header() {
                   href={`#${item.id}`}
                   // aria-current 로 "현재 위치"를 보조기기에도 알린다.
                   aria-current={isActive ? 'true' : undefined}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg px-2.5 py-2 text-[13px] font-medium transition ${
                     isActive
                       ? 'text-accent-600 dark:text-accent-400'
                       : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
@@ -147,7 +150,7 @@ export function Header() {
               aria-label={menuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              className="inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 md:hidden dark:border-zinc-800 dark:text-zinc-400"
+              className="inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 lg:hidden dark:border-zinc-800 dark:text-zinc-400"
             >
               {menuOpen ? <X size={17} /> : <Menu size={17} />}
             </button>
@@ -161,7 +164,7 @@ export function Header() {
       {menuOpen && (
         <div
           id="mobile-menu"
-          className="fixed inset-0 top-16 z-40 bg-white/95 backdrop-blur-md md:hidden dark:bg-zinc-950/95"
+          className="fixed inset-0 top-16 z-40 overflow-y-auto bg-white/95 backdrop-blur-md lg:hidden dark:bg-zinc-950/95"
         >
           <nav aria-label="주요 섹션 (모바일)" className="flex flex-col p-6">
             {nav.map((item) => (
