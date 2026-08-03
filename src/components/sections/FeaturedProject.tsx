@@ -306,8 +306,33 @@ export function FeaturedProject() {
           ))}
         </dl>
 
+        {/* 핵심 성과 미리보기 ---------------------------------------------
+            같은 데이터를 06 결과 섹션에서 다시 자세히 설명하므로 값을
+            복제해 두지 않는다. result.outcomes 앞 4개를 그대로 가져와
+            숫자만 먼저 보여준다 — 스크롤 없이 "이 프로젝트가 뭘 해냈는지"를
+            3초 안에 스캔하게 하려는 목적으로, 아래에서 근거를 확인할 수
+            있다는 걸 안내(→ 06 프로젝트 결과)해 뒤로 미룬 설명을 찾기 쉽게 한다. */}
+        <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-zinc-100 pt-5 sm:grid-cols-4 dark:border-zinc-800">
+          {result.outcomes.slice(0, 4).map((outcome) => (
+            <div key={outcome.id}>
+              <dt className="text-[11px] leading-snug text-zinc-500">
+                {outcome.label}
+              </dt>
+              <dd className="text-accent-600 dark:text-accent-400 mt-1 font-mono text-[15px] font-bold tabular-nums">
+                {outcome.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <a
+          href="#project-result"
+          className="text-accent-600 dark:text-accent-400 mt-4 inline-block text-[12px] font-medium hover:underline"
+        >
+          근거 자세히 보기 → 06 프로젝트 결과
+        </a>
+
         {links.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2 border-t border-zinc-100 pt-5 dark:border-zinc-800">
             {links.map((link) => {
               const meta = LINK_META[link.type]
               const Icon = meta.icon
@@ -493,11 +518,12 @@ export function FeaturedProject() {
       </SubSection>
 
       {/* ── 06. 프로젝트 결과 ─────────────────────────────────────────── */}
-      <SubSection
-        step="06"
-        title="프로젝트 결과"
-        description="02에서 세운 목표의 판정 기준에 대한 답입니다."
-      >
+      <div id="project-result" className="scroll-mt-32">
+        <SubSection
+          step="06"
+          title="프로젝트 결과"
+          description="02에서 세운 목표의 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
+        >
         <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
           {result.summary}
         </p>
@@ -544,7 +570,8 @@ export function FeaturedProject() {
             ))}
           </ul>
         </div>
-      </SubSection>
+        </SubSection>
+      </div>
 
       {/* ── 심화: 프로젝트 아키텍처 ───────────────────────────────────
           step 번호를 주지 않은 이유: 위 01~06은 프로젝트를 이해하는 데

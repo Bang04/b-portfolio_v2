@@ -1,4 +1,5 @@
 import { Header } from '@/components/common/Header'
+import { ProjectSubNav } from '@/components/common/ProjectSubNav'
 import { Footer } from '@/components/common/Footer'
 import { Hero } from '@/components/sections/Hero'
 import { About } from '@/components/sections/About'
@@ -39,15 +40,23 @@ import { Contact } from '@/components/sections/Contact'
  *  "React를 씁니다"는 정보가 아니다. "이 프로젝트에서 React로 무엇을 했나"가 정보다.
  *  스택을 쓴 맥락에서 떼어내면 남는 건 로고 나열뿐이라, 03 안으로 넣었다.
  *
- * 왜 04~06을 03에서 분리했나?
+ * 왜 04~07을 03에서 분리했나?
  *  하나의 프로젝트 카드에 다 넣으면 스크롤이 끝나지 않고, 무엇이 중요한지도
- *  사라진다. 성격이 다른 정보(문제해결 / 측정 / 가치관)는 헤딩을 나눠야
+ *  사라진다. 성격이 다른 정보(과정 / 문제해결 / 측정 / 가치관)는 헤딩을 나눠야
  *  읽는 사람이 필요한 곳으로 건너뛸 수 있다.
+ *
+ * 그런데 헤더 최상위 메뉴에는 04~07을 올리지 않는다.
+ *  04~07은 여전히 "Featured Project 하나"를 보는 네 가지 각도이지,
+ *  About·Others·Experience와 동급인 별개 주제가 아니다. 9개짜리 최상위
+ *  메뉴는 그 사실을 숨기고 전부 같은 무게로 보이게 만든다. 그래서 최상위
+ *  메뉴(Header)는 5개로 좁히고, 04~07은 <ProjectSubNav>가 Project 구간
+ *  안에서만 보여주는 서브 탭으로 옮겼다 — 정보는 그대로 두고 위계만 바로잡았다.
  */
 export default function App() {
   return (
     <>
       <Header />
+      <ProjectSubNav />
 
       {/* id="main": 헤더의 '본문으로 건너뛰기' 스킵 링크가 착지하는 지점.
           Hero가 min-h-svh로 화면을 꽉 채우므로 별도 상단 여백은 주지 않는다.

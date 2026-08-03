@@ -29,6 +29,19 @@ export interface NavItem {
   label: string
 }
 
+/**
+ * Project 클러스터 전용 서브 내비게이션 항목.
+ * ---------------------------------------------------------------------------
+ * Timeline·Challenges·Performance·Principles는 전부 "Project 하나를 깊게
+ * 파고드는 딥다이브"이지 최상위 메뉴와 동급인 별개 주제가 아니다.
+ * 헤더의 `nav`(최상위 5개)와 분리해 여기서만 노출되는 서브 탭으로 둔다.
+ *
+ * `NavItem`을 그대로 쓰지 않고 별도 이름을 준 이유:
+ * 타입 이름이 "이 배열은 Project 안에서만 쓰인다"는 의도를 드러낸다.
+ * 나중에 서브 내비 전용 필드가 필요해져도 NavItem 쪽은 건드리지 않아도 된다.
+ */
+export type ProjectNavItem = NavItem
+
 /* ===========================================================================
  * 01. Hero / 02. About Me
  * ========================================================================= */
@@ -498,7 +511,7 @@ export interface Project {
  * 08. Experience (경력 / 학력 / 자격 / 수상)
  * ========================================================================= */
 
-export type ExperienceKind = 'work' | 'education' | 'certificate' | 'award'
+export type ExperienceKind = 'work' | 'education' | 'certificate' | 'award' | 'training'
 
 export interface Experience {
   id: string
@@ -548,6 +561,8 @@ export interface ContactConfig {
 export interface PortfolioData {
   profile: Profile
   nav: NavItem[]
+  /** Project 클러스터(Project·Timeline·Challenges·Performance·Principles) 서브 내비게이션 */
+  projectNav: ProjectNavItem[]
   featuredProject: FeaturedProject
   timeline: TimelineWeek[]
   challenges: Challenge[]

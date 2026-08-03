@@ -86,6 +86,17 @@
     scroll-margin-top: 5rem;
   }
 
+  /* Project 클러스터(Overview~Principles)는 헤더(4rem) 아래에 ProjectSubNav
+     (~2.75rem)까지 함께 떠 있다. 5rem만 잡으면 서브내비에 제목이 가린다.
+     id 목록은 data/portfolioData.ts 의 projectNav 와 반드시 같아야 한다. */
+  section#project,
+  section#timeline,
+  section#challenges,
+  section#performance,
+  section#principles {
+    scroll-margin-top: 7.75rem;
+  }
+
   ::selection {
     @apply bg-accent-500/25;
   }

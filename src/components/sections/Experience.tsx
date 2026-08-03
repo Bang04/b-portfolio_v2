@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, Briefcase, GraduationCap } from 'lucide-react'
+import { Award, BadgeCheck, Briefcase, GraduationCap, School } from 'lucide-react'
 import type { ComponentType } from 'react'
 import { experiences } from '@/data/portfolioData'
 import { Section } from '@/components/common/Section'
@@ -9,8 +9,9 @@ const KIND_META: Record<
   ExperienceKind,
   { icon: ComponentType<{ size?: number; className?: string }>; label: string }
 > = {
-  work: { icon: Briefcase, label: '경력' },
+ work: { icon: Briefcase, label: '경력' },
   education: { icon: GraduationCap, label: '학력' },
+  training: { icon: School, label: '교육 이수' },
   certificate: { icon: BadgeCheck, label: '자격' },
   award: { icon: Award, label: '수상' },
 }
@@ -113,7 +114,7 @@ export function Experience() {
    *   경력과 자격증이 시간순으로 섞이면 "이 사람 커리어가 어땠는지" 읽기 어렵다.
    *   채용 담당자는 보통 경력 → 학력 → 그 외 순으로 훑는다. 그 순서를 그대로 따른다.
    */
-  const order: ExperienceKind[] = ['work', 'education', 'certificate', 'award']
+  const order: ExperienceKind[] = ['work', 'education', 'training', 'certificate', 'award']
   const groups = order
     .map((kind) => ({
       kind,
