@@ -272,22 +272,19 @@ export interface ProjectGoal {
 }
 
 /**
- * 핵심 기능 하나.
+ * 핵심 기능 하나를 Challenges 카드로 잇는 인덱스 항목.
  *
- * `description`(무엇을 하는 기능인가) 대신 problem/solution 을 받는다.
- * 기능 설명이 지루해지는 이유는 길어서가 아니라, 읽는 사람이
- * "그래서 그게 왜 필요한데?"를 스스로 채워 넣어야 하기 때문이다.
- * 없을 때의 불편을 먼저 말하면 기능은 저절로 설명된다.
+ * 예전에는 이 자리에 problem/solution 전문을 담은 FeatureItem이 있었다.
+ * 문제는 그 내용이 04 Technical Challenges의 problem/approach/result 카드와
+ * 거의 1:1로 겹쳤다는 것 — 같은 사건을 두 번 다른 형식으로 설명한 셈이다.
+ * 이제 "무엇을 만들었나"의 목록은 여기서 제목만 스캔하게 하고,
+ * "어떻게 풀었나"의 전체 서술은 Challenges 한 곳에서만 전담한다.
  */
-export interface FeatureItem {
+export interface FeatureLink {
   id: string
   title: string
-  /** 이 기능이 없을 때 무엇이 문제였나 */
-  problem: string
-  /** 그래서 어떻게 만들었나 */
-  solution: string
-  /** 구현상 특기할 점 (선택) */
-  detail?: string
+  /** 이 항목의 전체 설명이 있는 Challenges 카드 id */
+  challengeId: string
 }
 
 /** 결과 지표 하나 */
@@ -304,10 +301,12 @@ export interface ProjectResult {
   summary: string
   outcomes: ProjectOutcome[]
   /**
-   * 회고 — 무엇을 배웠고 무엇이 남았나.
-   * 성과만 있고 회고가 없으면 "운이 좋았던 프로젝트"와 구분되지 않는다.
+   * 회고는 여기 없다. "무엇을 배웠나"는 06 Engineering Principles가 전담한다.
+   * 예전엔 이 자리에도 retrospective 배열이 있었는데, Principles의 evidence와
+   * 문장 단위로 겹쳤다 — 같은 교훈을 "회고"와 "원칙"이라는 두 이름으로
+   * 두 번 쓴 것이다. 결과는 숫자(outcomes)까지만 말하고, 그 숫자에서
+   * 무엇을 배웠는지는 Principles로 넘긴다.
    */
-  retrospective: string[]
 }
 
 /**
@@ -354,15 +353,15 @@ export interface FeaturedProject {
    *   overview  이게 뭔가
    *   goals     왜 필요했나        ← 여기가 없으면 아래 전부가 "할 일 목록"이 된다
    *   role      그중 내가 한 건 뭔가
-   *   techStack 무엇으로 했나
-   *   features  어떤 문제를 어떻게 풀었나
-   *   result    그래서 뭐가 달라졌나
+   *   techStack   무엇으로 했나
+   *   featureIndex 무엇을 만들었나 (제목만 — 전체 서술은 04 Challenges)
+   *   result      그래서 뭐가 달라졌나
    */
   overview: string[]
   goals: ProjectGoal[]
   role: ProjectRole
   techStack: SkillCategory[]
-  features: FeatureItem[]
+  featureIndex: FeatureLink[]
   result: ProjectResult
   /** 심화 — 위 6단계를 다 읽은 사람에게만 필요한 설계 상세 */
   architecture: ArchitectureSpec
@@ -480,8 +479,20 @@ export interface Principle {
   title: string
   /** 왜 이 원칙을 갖게 됐나 */
   body: string
-  /** 이 프로젝트에서 실제로 어떻게 지켰나 — 없으면 그냥 좋은 말일 뿐이다. */
-  evidence: string
+  /**
+   * 이 원칙이 쓰인 사례로 가는 링크.
+   *
+   * 예전엔 이 자리에 사례를 문단으로 풀어 쓴 `evidence: string`이 있었는데,
+   * 그 문단은 대개 Performance나 Challenges에 이미 있는 문장의 재서술이었다.
+   * 원칙은 "판단을 관통하는 기준"만 말하고, 근거의 전체 서술은 원본 섹션
+   * 하나에만 두기 위해 링크로 바꿨다 — 같은 사례를 두 번 설명하지 않는다.
+   */
+  evidenceRef: {
+    /** 배지에 보이는 짧은 라벨. 예: '번들 최적화 (Performance)' */
+    label: string
+    /** 이동할 앵커. 해당 Challenge/Performance 카드의 id를 가리킨다 */
+    href: string
+  }
 }
 
 /* ===========================================================================

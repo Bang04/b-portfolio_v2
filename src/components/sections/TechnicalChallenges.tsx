@@ -122,7 +122,14 @@ function ChallengeCard({
           </div>
         </summary>
 
-        <div className="space-y-3.5 border-t border-zinc-100 px-5 pt-5 pb-5 dark:border-zinc-800">
+        {/* id를 접힌 본문 쪽에 둔 이유: Principles의 근거 링크(#ch-isolation 등)로
+            들어왔을 때, 이 요소가 <details> 안의 "펼쳐야 보이는" 영역이라
+            브라우저가 조상 <details>를 자동으로 열어준다(HTML 표준의 fragment
+            reveal 동작). id를 summary나 details 자체에 두면 이 효과가 없다. */}
+        <div
+          id={challenge.id}
+          className="scroll-mt-32 space-y-3.5 border-t border-zinc-100 px-5 pt-5 pb-5 dark:border-zinc-800"
+        >
           <Block label="Problem · 무엇이 문제였나" text={challenge.problem} />
           <Block label="Approach · 어떻게 접근했나" text={challenge.approach} />
           <Block label="Result · 무엇이 달라졌나" text={challenge.result} emphasis />

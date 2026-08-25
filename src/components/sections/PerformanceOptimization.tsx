@@ -77,7 +77,9 @@ function StepList({
 
 function PerfCaseCard({ perfCase }: { perfCase: PerfCase }) {
   return (
-    <article className="card p-6">
+    // scroll-mt-32: Principles의 근거 링크(#perf-splitting 등)로 바로 이동할 때
+    // 고정 헤더에 제목이 가리지 않도록 여백을 둔다.
+    <article id={perfCase.id} className="card scroll-mt-32 p-6">
       <h3 className="text-[16px] leading-snug font-bold">{perfCase.title}</h3>
       <p className="mt-2.5 text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
         {perfCase.situation}

@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react'
-import { BookOpen, Flag, GitMerge, Puzzle, Ruler, Shield } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Flag, GitMerge, Puzzle, Ruler, Shield } from 'lucide-react'
 import { principles } from '@/data/portfolioData'
 import { Section } from '@/components/common/Section'
 import type { PrincipleIconName } from '@/types'
@@ -64,16 +64,25 @@ export function EngineeringPrinciples() {
                 {principle.body}
               </p>
 
-              {/* mt-auto: 카드 높이가 달라도 근거 블록을 바닥에 정렬시킨다. */}
+              {/* mt-auto: 카드 높이가 달라도 근거 링크를 바닥에 정렬시킨다.
+                  문단이 아니라 링크인 이유: 이 사례의 전체 서술은 이미
+                  Performance나 Challenges 카드에 있다. 여기서 다시 풀어 쓰면
+                  같은 사례를 세 번째로 설명하는 셈이라, 대신 그 카드로 보낸다. */}
               <div className="mt-auto pt-5">
-                <div className="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/40">
-                  <p className="mb-1.5 font-mono text-[10.5px] font-semibold tracking-wider text-zinc-400 uppercase">
-                    실제로 이렇게 했습니다
-                  </p>
-                  <p className="text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {principle.evidence}
-                  </p>
-                </div>
+                <a
+                  href={principle.evidenceRef.href}
+                  className="group/evidence inline-flex items-center gap-1.5 rounded-xl bg-zinc-50 px-3.5 py-2.5 text-[12.5px] font-medium text-zinc-600 transition hover:bg-zinc-100 dark:bg-zinc-800/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                >
+                  <span className="font-mono text-[10px] font-semibold tracking-wider text-zinc-400 uppercase">
+                    근거
+                  </span>
+                  {principle.evidenceRef.label}
+                  <ArrowUpRight
+                    size={12}
+                    aria-hidden="true"
+                    className="text-zinc-400 transition group-hover/evidence:text-accent-500"
+                  />
+                </a>
               </div>
             </li>
           )

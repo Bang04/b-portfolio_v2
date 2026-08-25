@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from 'react'
 import {
   AlertTriangle,
-  ArrowDown,
+  ArrowUpRight,
   ChevronRight,
   Code,
   Database,
@@ -259,7 +259,7 @@ export function FeaturedProject() {
     goals,
     role,
     techStack,
-    features,
+    featureIndex,
     result,
     architecture,
     links,
@@ -474,44 +474,31 @@ export function FeaturedProject() {
       </SubSection>
 
       {/* ── 05. 핵심 기능 ─────────────────────────────────────────────── */}
+      {/* 이 목록은 제목까지만 말한다. "이게 없을 때 무엇이 불편했고 어떻게
+          풀었는지"의 전체 서술은 04 Technical Challenges 카드 하나에만 있다 —
+          여기 다시 쓰면 같은 사건을 problem/solution 두 줄로 압축해 반복하는
+          꼴이 된다. 대신 각 항목을 해당 Challenges 카드로 바로 연결한다. */}
       <SubSection
         step="05"
         title="핵심 기능"
-        description="기능 목록이 아니라 문제 목록으로 읽히도록, 각 항목마다 “이게 없을 때 무엇이 불편했는지”를 먼저 적었습니다."
+        description="무엇을 만들었는지의 목록입니다. 각 항목이 왜 필요했고 어떻게 풀었는지는 04 Technical Challenges에 있으며, 클릭하면 해당 카드로 이동합니다."
       >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {features.map((feature) => (
-            <li key={feature.id} className="card flex flex-col p-5">
-              <h4 className="text-[14.5px] font-bold">{feature.title}</h4>
-
-              <div className="mt-3 space-y-3">
-                <div>
-                  <p className="mb-1 font-mono text-[10.5px] font-semibold tracking-wider text-zinc-400 uppercase">
-                    이게 없으면
-                  </p>
-                  <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {feature.problem}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-accent-600 dark:text-accent-400 mb-1 flex items-center gap-1 font-mono text-[10.5px] font-semibold tracking-wider uppercase">
-                    <ArrowDown size={10} aria-hidden="true" />
-                    그래서
-                  </p>
-                  <p className="text-[13.5px] leading-relaxed font-medium text-zinc-800 dark:text-zinc-200">
-                    {feature.solution}
-                  </p>
-                </div>
-              </div>
-
-              {feature.detail && (
-                // mt-auto: 카드 높이가 서로 달라도 부연 줄을 바닥에 정렬시킨다.
-                // 그리드에서 아래쪽이 들쭉날쭉해 보이는 문제를 이 한 줄로 해결한다.
-                <p className="mt-auto border-t border-zinc-100 pt-3.5 font-mono text-[11.5px] leading-snug text-zinc-400 dark:border-zinc-800">
-                  {feature.detail}
-                </p>
-              )}
+        <ul className="grid gap-2.5 sm:grid-cols-2">
+          {featureIndex.map((feature) => (
+            <li key={feature.id}>
+              <a
+                href={`#${feature.challengeId}`}
+                className="group/link card flex items-center justify-between gap-3 px-4 py-3.5 transition hover:border-zinc-300 dark:hover:border-zinc-700"
+              >
+                <span className="text-[13.5px] font-medium text-zinc-700 dark:text-zinc-300">
+                  {feature.title}
+                </span>
+                <ArrowUpRight
+                  size={14}
+                  aria-hidden="true"
+                  className="text-zinc-300 transition group-hover/link:text-accent-500 dark:text-zinc-700"
+                />
+              </a>
             </li>
           ))}
         </ul>
@@ -550,26 +537,15 @@ export function FeaturedProject() {
           ))}
         </dl>
 
-        {/* 회고 ----------------------------------------------------------
-            성과만 있고 회고가 없으면 "운이 좋았던 프로젝트"와 구분되지 않는다.
-            불편했던 점과 남은 과제를 같이 적어야 판단의 근거가 드러난다. */}
-        <div className="mt-8 rounded-2xl border border-dashed border-zinc-300 p-6 dark:border-zinc-700">
-          <h4 className="mb-4 text-[15px] font-bold">돌아보면</h4>
-          <ul className="space-y-3">
-            {result.retrospective.map((item) => (
-              <li
-                key={item}
-                className="flex gap-2.5 text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400"
-              >
-                <span
-                  aria-hidden="true"
-                  className="mt-[0.62em] size-1.5 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-600"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* "무엇을 배웠나"의 회고는 여기 없다 — 06 Engineering Principles가
+            숫자 대신 판단 기준으로 전담한다. 같은 교훈을 두 이름으로
+            반복하지 않기 위한 결정이다. */}
+        <a
+          href="#principles"
+          className="text-accent-600 dark:text-accent-400 mt-6 inline-block text-[12px] font-medium hover:underline"
+        >
+          이 결과에서 무엇을 배웠는지 → Engineering Principles
+        </a>
         </SubSection>
       </div>
 
