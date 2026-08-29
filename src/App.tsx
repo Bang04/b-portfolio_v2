@@ -1,13 +1,9 @@
 import { Header } from '@/components/common/Header'
-import { ProjectSubNav } from '@/components/common/ProjectSubNav'
 import { Footer } from '@/components/common/Footer'
 import { Hero } from '@/components/sections/Hero'
 import { About } from '@/components/sections/About'
 import { FeaturedProject } from '@/components/sections/FeaturedProject'
 import { Timeline } from '@/components/sections/Timeline'
-import { TechnicalChallenges } from '@/components/sections/TechnicalChallenges'
-import { PerformanceOptimization } from '@/components/sections/PerformanceOptimization'
-import { EngineeringPrinciples } from '@/components/sections/EngineeringPrinciples'
 import { OtherProjects } from '@/components/sections/OtherProjects'
 import { Experience } from '@/components/sections/Experience'
 import { Contact } from '@/components/sections/Contact'
@@ -21,15 +17,12 @@ import { Contact } from '@/components/sections/Contact'
  *
  * 섹션 순서 = 읽는 사람이 판단을 내리는 순서
  *  01 Hero          누구인가
- *  02 About Me      어떤 사람인가
- *  03 Featured      가장 잘 아는 것 하나를 깊게 (소개 → 목표 → 역할 → 스택 → 기능 → 결과)
+ *  02 About Me      어떤 사람인가 + 일하는 방식
+ *  03 Featured      가장 잘 아는 것 하나를 깊게 (소개 → 목표 → 역할 → 스택 → 결과 → 딥다이브)
  *  04 Timeline      그 결과에 도달하기까지 판단이 어떻게 바뀌었나
- *  05 Challenges    그 안에서 무엇에 막혔고 어떻게 뚫었나
- *  06 Performance   숫자로 증명되는 개선
- *  07 Principles    그 판단들을 관통하는 기준
- *  08 Others        폭(breadth)의 증거
- *  09 Experience    이력의 사실관계
- *  10 Contact       다음 행동
+ *  05 Others        폭(breadth)의 증거
+ *  06 Experience    이력의 사실관계
+ *  07 Contact       다음 행동
  *
  * Timeline을 03 바로 뒤에 둔 이유:
  *  03이 "무엇을 만들었나"의 완성된 모습이라면, 04는 거기 도달하기까지의 과정이다.
@@ -40,23 +33,17 @@ import { Contact } from '@/components/sections/Contact'
  *  "React를 씁니다"는 정보가 아니다. "이 프로젝트에서 React로 무엇을 했나"가 정보다.
  *  스택을 쓴 맥락에서 떼어내면 남는 건 로고 나열뿐이라, 03 안으로 넣었다.
  *
- * 왜 04~07을 03에서 분리했나?
- *  하나의 프로젝트 카드에 다 넣으면 스크롤이 끝나지 않고, 무엇이 중요한지도
- *  사라진다. 성격이 다른 정보(과정 / 문제해결 / 측정 / 가치관)는 헤딩을 나눠야
- *  읽는 사람이 필요한 곳으로 건너뛸 수 있다.
- *
- * 그런데 헤더 최상위 메뉴에는 04~07을 올리지 않는다.
- *  04~07은 여전히 "Featured Project 하나"를 보는 네 가지 각도이지,
- *  About·Others·Experience와 동급인 별개 주제가 아니다. 9개짜리 최상위
- *  메뉴는 그 사실을 숨기고 전부 같은 무게로 보이게 만든다. 그래서 최상위
- *  메뉴(Header)는 5개로 좁히고, 04~07은 <ProjectSubNav>가 Project 구간
- *  안에서만 보여주는 서브 탭으로 옮겼다 — 정보는 그대로 두고 위계만 바로잡았다.
+ * 예전엔 Challenges·Performance·Principles가 04~07로 독립해 있었다.
+ *  세 섹션 모두 "Project 하나를 깊게 파고드는 딥다이브"였을 뿐 About·Others와
+ *  동급인 별개 주제가 아니었고, 같은 사건을 형식만 바꿔 여러 번 설명하고
+ *  있었다. Challenges·Performance는 03 안의 "딥다이브"로, Principles는
+ *  02 About의 "일하는 방식"으로 접었다 — 정보는 그대로 두고 위계와 중복만
+ *  바로잡았다.
  */
 export default function App() {
   return (
     <>
       <Header />
-      <ProjectSubNav />
 
       {/* id="main": 헤더의 '본문으로 건너뛰기' 스킵 링크가 착지하는 지점.
           Hero가 min-h-svh로 화면을 꽉 채우므로 별도 상단 여백은 주지 않는다.
@@ -66,9 +53,6 @@ export default function App() {
         <About />
         <FeaturedProject />
         <Timeline />
-        <TechnicalChallenges />
-        <PerformanceOptimization />
-        <EngineeringPrinciples />
         <OtherProjects />
         <Experience />
         <Contact />

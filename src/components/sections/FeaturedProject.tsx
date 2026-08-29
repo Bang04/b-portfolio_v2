@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from 'react'
 import {
   AlertTriangle,
-  ArrowUpRight,
+  ArrowRight,
   ChevronRight,
   Code,
   Database,
@@ -13,14 +13,19 @@ import {
   Target,
   Wrench,
 } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { featuredProject } from '@/data/portfolioData'
 import { Section } from '@/components/common/Section'
 import { ArchitectureDiagram } from '@/components/common/ArchitectureDiagram'
 import { GithubIcon } from '@/components/common/BrandIcons'
+import { Reveal, REVEAL_EASE, REVEAL_VIEWPORT } from '@/components/common/Reveal'
+import { CountUp } from '@/components/common/CountUp'
 import type { BrandIconProps } from '@/components/common/BrandIcons'
 import type {
   ArchitectureLayer,
+  DeepDive,
   ProjectGoal,
+  ProjectLimit,
   ProjectLinkType,
   SkillIconName,
   SkillLevel,
@@ -82,7 +87,7 @@ const LEVEL_STYLES: Record<SkillLevel, { className: string; label: string }> = {
 /* ---------------------------------------------------------------------------
  * 하위 섹션 껍데기
  * ---------------------------------------------------------------------------
- * Featured Project 안에만 5개 블록이 들어간다. 매번 제목 마크업을 손으로 적으면
+ * Featured Project 안에 여러 블록이 들어간다. 매번 제목 마크업을 손으로 적으면
  * 반드시 한 곳이 어긋나므로 여기서 한 번만 정의한다.
  * Section(h2) 아래에 오므로 제목 레벨은 h3다 — 시각적 크기가 아니라
  * 문서 구조를 기준으로 정해야 스크린리더의 목차 탐색이 망가지지 않는다.
@@ -205,7 +210,15 @@ function ArchitectureCard({
  */
 function GoalCard({ goal, index }: { goal: ProjectGoal; index: number }) {
   return (
-    <li className="card flex flex-col p-5">
+    // motion.li: 목표 5개가 2열 그리드에 거의 동시에 나타나므로, 카드마다
+    // 약간의 시차(delay)를 줘 순서대로 켜지는 느낌을 살렸다.
+    <motion.li
+      className="card flex flex-col p-5"
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={REVEAL_VIEWPORT}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: REVEAL_EASE }}
+    >
       <div className="mb-3 flex items-start gap-3">
         {/* tabular-nums: 숫자 폭 고정 — 01, 02… 가 세로로 정렬된다 */}
         <span className="font-mono text-xs text-zinc-300 tabular-nums dark:text-zinc-700">
@@ -235,7 +248,7 @@ function GoalCard({ goal, index }: { goal: ProjectGoal; index: number }) {
       </div>
 
       {/* mt-auto: 카드 높이가 달라도 판정 기준 줄을 바닥에 정렬시킨다.
-          이 줄이 06 결과 섹션과 짝을 이룬다 —
+          이 줄이 05 결과 섹션과 짝을 이룬다 —
           판정 방법이 없는 목표는 목표가 아니라 소망이다. */}
       <div className="mt-auto flex gap-2 pt-4 text-[12.5px] leading-relaxed text-zinc-500">
         <Target size={13} aria-hidden="true" className="mt-0.5 shrink-0" />
@@ -243,7 +256,197 @@ function GoalCard({ goal, index }: { goal: ProjectGoal; index: number }) {
           <span className="font-semibold">판정 기준</span> · {goal.measure}
         </span>
       </div>
-    </li>
+    </motion.li>
+  )
+}
+
+/**
+ * 딥다이브 카드 — <details>/<summary> 아코디언
+ * ---------------------------------------------------------------------------
+ * 구 Technical Challenges의 ChallengeCard와 구 Performance의 PerfCaseCard를
+ * 하나로 합쳤다. 두 섹션이 problem/approach/result와 situation/causes/
+ * solutions로 형식만 다르게 같은 종류의 사건을 설명하고 있었기 때문이다.
+ * 수치가 있는 사건(구 Performance 사례)만 MetricBadge가 추가로 붙는다.
+ */
+function DeepDiveBlock({
+  label,
+  text,
+  emphasis = false,
+}: {
+  label: string
+  text: string
+  emphasis?: boolean
+}) {
+  return (
+    <div>
+      <p
+        className={`mb-1 font-mono text-[10.5px] font-semibold tracking-wider uppercase ${
+          emphasis
+            ? 'text-accent-600 dark:text-accent-400'
+            : 'text-zinc-400 dark:text-zinc-500'
+        }`}
+      >
+        {label}
+      </p>
+      <p
+        className={`text-[13.5px] leading-relaxed ${
+          emphasis
+            ? 'font-medium text-zinc-800 dark:text-zinc-200'
+            : 'text-zinc-600 dark:text-zinc-400'
+        }`}
+      >
+        {text}
+      </p>
+    </div>
+  )
+}
+
+/** before → after → delta 를 한 줄에 붙여 보여준다. before를 지우면 숫자는 검증 불가능해진다. */
+function DeepDiveMetric({ metric }: { metric: NonNullable<DeepDive['metric']> }) {
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <p className="mb-2.5 text-[11.5px] font-medium text-zinc-500">{metric.label}</p>
+      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+        <span className="font-mono text-[15px] text-zinc-400 line-through decoration-zinc-300 tabular-nums dark:decoration-zinc-600">
+          {metric.before}
+        </span>
+        <ArrowRight
+          size={13}
+          aria-hidden="true"
+          className="shrink-0 text-zinc-300 dark:text-zinc-600"
+        />
+        <CountUp
+          text={metric.after}
+          from={metric.before}
+          className="text-accent-600 dark:text-accent-400 font-mono text-lg font-bold tabular-nums"
+        />
+      </div>
+      <p className="mt-2 font-mono text-[11.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+        {metric.delta}
+      </p>
+    </div>
+  )
+}
+
+function DeepDiveCard({
+  deepDive,
+  index,
+  defaultOpen,
+}: {
+  deepDive: DeepDive
+  index: number
+  defaultOpen: boolean
+}) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={REVEAL_VIEWPORT}
+      transition={{ duration: 0.55, ease: REVEAL_EASE }}
+    >
+      <details open={defaultOpen} className="card group/details p-0">
+        <summary className="flex cursor-pointer list-none items-start gap-3 p-5">
+          <ChevronRight
+            size={16}
+            aria-hidden="true"
+            className="text-accent-500 mt-1 shrink-0 transition-transform duration-200 group-open/details:rotate-90"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="mb-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <span className="font-mono text-xs text-zinc-300 tabular-nums dark:text-zinc-700">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span className="chip font-mono text-[10.5px]! tracking-wide">
+                {deepDive.tag}
+              </span>
+            </div>
+            <h4 className="text-[15px] leading-snug font-bold">{deepDive.title}</h4>
+            <p className="group-open/details:hidden mt-1.5 line-clamp-1 text-[12.5px] text-zinc-500">
+              {deepDive.result}
+            </p>
+          </div>
+        </summary>
+
+        {/* id를 접힌 본문 쪽에 둔 이유: workingStyle의 근거 링크(#dd-render 등)로
+            들어왔을 때, 이 요소가 <details> 안의 "펼쳐야 보이는" 영역이라
+            브라우저가 조상 <details>를 자동으로 열어준다(fragment reveal). */}
+        <div
+          id={deepDive.id}
+          className="scroll-mt-32 space-y-3.5 border-t border-zinc-100 px-5 pt-5 pb-5 dark:border-zinc-800"
+        >
+          <DeepDiveBlock label="Problem · 무엇이 문제였나" text={deepDive.problem} />
+          <DeepDiveBlock label="Approach · 어떻게 접근했나" text={deepDive.approach} />
+          <DeepDiveBlock label="Result · 무엇이 달라졌나" text={deepDive.result} emphasis />
+
+          {deepDive.metric && <DeepDiveMetric metric={deepDive.metric} />}
+
+          <DeepDiveBlock label="Learned · 무엇을 배웠나" text={deepDive.learned} emphasis />
+
+          <ul className="flex flex-wrap gap-1.5 pt-1">
+            {deepDive.keywords.map((keyword) => (
+              <li
+                key={keyword}
+                className="rounded-md bg-zinc-50 px-2 py-0.5 font-mono text-[10.5px] text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400"
+              >
+                {keyword}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
+    </motion.li>
+  )
+}
+
+/**
+ * "하지 못한 것들" — 구 role.boundaries(담당 밖) + performance.notYet(적용 못한 개선)
+ * ---------------------------------------------------------------------------
+ * kind 별로 묶어서 보여준다. 종류가 다른 세 가지 "못 한 것"을 한 줄로 섞으면
+ * "담당이 아니었다"와 "내 몫인데 못 끝냈다"의 무게 차이가 사라진다.
+ */
+const LIMIT_KIND_META: Record<ProjectLimit['kind'], string> = {
+  scope: '담당 범위 밖',
+  unfinished: '만들다 만 것',
+  learning: '경험·측정이 아직 없는 것',
+}
+
+function LimitsSection({ limits }: { limits: ProjectLimit[] }) {
+  const groups = (['scope', 'unfinished', 'learning'] as const)
+    .map((kind) => ({ kind, items: limits.filter((limit) => limit.kind === kind) }))
+    .filter((group) => group.items.length > 0)
+
+  return (
+    <div
+      id="project-limits"
+      className="scroll-mt-32 rounded-2xl border border-dashed border-zinc-300 p-6 dark:border-zinc-700"
+    >
+      <p className="mb-4 flex items-center gap-1.5 text-[15px] font-bold">
+        <AlertTriangle size={14} aria-hidden="true" className="text-zinc-400" />
+        하지 못한 것들
+      </p>
+
+      <div className="space-y-6">
+        {groups.map((group) => (
+          <div key={group.kind}>
+            <p className="mb-2.5 font-mono text-[11px] font-semibold tracking-wider text-zinc-400 uppercase">
+              {LIMIT_KIND_META[group.kind]}
+            </p>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              {group.items.map((item) => (
+                <div key={item.title}>
+                  <dt className="text-[13.5px] font-semibold text-zinc-700 dark:text-zinc-300">
+                    {item.title}
+                  </dt>
+                  <dd className="mt-1.5 text-[13px] leading-relaxed text-zinc-500">
+                    {item.note}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -259,8 +462,9 @@ export function FeaturedProject() {
     goals,
     role,
     techStack,
-    featureIndex,
     result,
+    deepDives,
+    limits,
     architecture,
     links,
   } = featuredProject
@@ -307,28 +511,34 @@ export function FeaturedProject() {
         </dl>
 
         {/* 핵심 성과 미리보기 ---------------------------------------------
-            같은 데이터를 06 결과 섹션에서 다시 자세히 설명하므로 값을
+            같은 데이터를 05 결과 섹션에서 다시 자세히 설명하므로 값을
             복제해 두지 않는다. result.outcomes 앞 4개를 그대로 가져와
             숫자만 먼저 보여준다 — 스크롤 없이 "이 프로젝트가 뭘 해냈는지"를
             3초 안에 스캔하게 하려는 목적으로, 아래에서 근거를 확인할 수
-            있다는 걸 안내(→ 06 프로젝트 결과)해 뒤로 미룬 설명을 찾기 쉽게 한다. */}
+            있다는 걸 안내(→ 05 프로젝트 결과)해 뒤로 미룬 설명을 찾기 쉽게 한다. */}
         <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-zinc-100 pt-5 sm:grid-cols-4 dark:border-zinc-800">
-          {result.outcomes.slice(0, 4).map((outcome) => (
-            <div key={outcome.id}>
+          {result.outcomes.slice(0, 4).map((outcome, index) => (
+            <motion.div
+              key={outcome.id}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={REVEAL_VIEWPORT}
+              transition={{ duration: 0.45, delay: index * 0.08, ease: REVEAL_EASE }}
+            >
               <dt className="text-[11px] leading-snug text-zinc-500">
                 {outcome.label}
               </dt>
               <dd className="text-accent-600 dark:text-accent-400 mt-1 font-mono text-[15px] font-bold tabular-nums">
-                {outcome.value}
+                <CountUp text={outcome.value} />
               </dd>
-            </div>
+            </motion.div>
           ))}
         </dl>
         <a
           href="#project-result"
           className="text-accent-600 dark:text-accent-400 mt-4 inline-block text-[12px] font-medium hover:underline"
         >
-          근거 자세히 보기 → 06 프로젝트 결과
+          근거 자세히 보기 → 05 프로젝트 결과
         </a>
 
         {links.length > 0 && (
@@ -405,28 +615,6 @@ export function FeaturedProject() {
             </div>
           ))}
         </div>
-
-        {/* 경계선 블록 ---------------------------------------------------
-            이 박스가 이 섹션에서 가장 중요할 수 있다.
-            "어디까지가 내 일이 아닌지"를 먼저 밝히면 위의 주장 전체가 믿을 만해진다.
-            감췄다가 하나 들키면 나머지도 전부 의심받는다. */}
-        <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/70 p-5 dark:border-zinc-800 dark:bg-zinc-900/40">
-          <p className="mb-3 flex items-center gap-1.5 text-[13px] font-semibold text-zinc-700 dark:text-zinc-300">
-            <AlertTriangle size={13} aria-hidden="true" className="text-zinc-400" />
-            여기까지는 제가 한 일이 아닙니다
-          </p>
-          <ul className="space-y-1.5">
-            {role.boundaries.map((item) => (
-              <li
-                key={item}
-                className="flex gap-2 text-[13px] leading-relaxed text-zinc-500"
-              >
-                <span aria-hidden="true">·</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
       </SubSection>
 
       {/* ── 04. 기술 스택 ─────────────────────────────────────────────── */}
@@ -473,41 +661,10 @@ export function FeaturedProject() {
         </div>
       </SubSection>
 
-      {/* ── 05. 핵심 기능 ─────────────────────────────────────────────── */}
-      {/* 이 목록은 제목까지만 말한다. "이게 없을 때 무엇이 불편했고 어떻게
-          풀었는지"의 전체 서술은 04 Technical Challenges 카드 하나에만 있다 —
-          여기 다시 쓰면 같은 사건을 problem/solution 두 줄로 압축해 반복하는
-          꼴이 된다. 대신 각 항목을 해당 Challenges 카드로 바로 연결한다. */}
-      <SubSection
-        step="05"
-        title="핵심 기능"
-        description="무엇을 만들었는지의 목록입니다. 각 항목이 왜 필요했고 어떻게 풀었는지는 04 Technical Challenges에 있으며, 클릭하면 해당 카드로 이동합니다."
-      >
-        <ul className="grid gap-2.5 sm:grid-cols-2">
-          {featureIndex.map((feature) => (
-            <li key={feature.id}>
-              <a
-                href={`#${feature.challengeId}`}
-                className="group/link card flex items-center justify-between gap-3 px-4 py-3.5 transition hover:border-zinc-300 dark:hover:border-zinc-700"
-              >
-                <span className="text-[13.5px] font-medium text-zinc-700 dark:text-zinc-300">
-                  {feature.title}
-                </span>
-                <ArrowUpRight
-                  size={14}
-                  aria-hidden="true"
-                  className="text-zinc-300 transition group-hover/link:text-accent-500 dark:text-zinc-700"
-                />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </SubSection>
-
-      {/* ── 06. 프로젝트 결과 ─────────────────────────────────────────── */}
+      {/* ── 05. 프로젝트 결과 ─────────────────────────────────────────── */}
       <div id="project-result" className="scroll-mt-32">
         <SubSection
-          step="06"
+          step="05"
           title="프로젝트 결과"
           description="02에서 세운 목표의 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
         >
@@ -520,38 +677,45 @@ export function FeaturedProject() {
             "after"만 크게 쓰면 숫자가 커 보이지만 검증은 불가능해진다.
             개선은 언제나 도달점이 아니라 차이다. */}
         <dl className="grid gap-4 sm:grid-cols-2">
-          {result.outcomes.map((outcome) => (
-            <div key={outcome.id} className="card p-5">
+          {result.outcomes.map((outcome, index) => (
+            <motion.div
+              key={outcome.id}
+              className="card p-5"
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={REVEAL_VIEWPORT}
+              transition={{ duration: 0.5, delay: (index % 2) * 0.1, ease: REVEAL_EASE }}
+            >
               <dt className="text-[12px] font-medium text-zinc-500">
                 {outcome.label}
               </dt>
               <dd>
                 <p className="text-accent-600 dark:text-accent-400 mt-1.5 font-mono text-[17px] font-bold tabular-nums">
-                  {outcome.value}
+                  <CountUp text={outcome.value} />
                 </p>
                 <p className="mt-2.5 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {outcome.description}
                 </p>
               </dd>
-            </div>
+            </motion.div>
           ))}
         </dl>
 
-        {/* "무엇을 배웠나"의 회고는 여기 없다 — 06 Engineering Principles가
+        {/* "무엇을 배웠나"의 회고는 여기 없다 — About의 작업 원칙이
             숫자 대신 판단 기준으로 전담한다. 같은 교훈을 두 이름으로
             반복하지 않기 위한 결정이다. */}
         <a
-          href="#principles"
+          href="#about"
           className="text-accent-600 dark:text-accent-400 mt-6 inline-block text-[12px] font-medium hover:underline"
         >
-          이 결과에서 무엇을 배웠는지 → Engineering Principles
+          이 결과에서 무엇을 배웠는지 → About · 일하는 방식
         </a>
         </SubSection>
       </div>
 
-      {/* ── 심화: 프로젝트 아키텍처 ───────────────────────────────────
-          step 번호를 주지 않은 이유: 위 01~06은 프로젝트를 이해하는 데
-          필요한 최소 흐름이고, 아키텍처는 그걸 다 읽은 사람에게만 필요한
+      {/* ── 심화: 딥다이브 · 아키텍처 · 하지 못한 것들 ─────────────────
+          step 번호를 주지 않은 이유: 위 01~05는 프로젝트를 이해하는 데
+          필요한 최소 흐름이고, 아래는 그걸 다 읽은 사람에게만 필요한
           상세다. 같은 번호 체계에 넣으면 "여기까지 읽어야 한다"는
           압박이 생기고, 이탈 지점이 앞당겨진다. */}
       <div className="mt-20 border-t border-zinc-100 pt-4 dark:border-zinc-900">
@@ -559,6 +723,25 @@ export function FeaturedProject() {
           Deep Dive
         </p>
       </div>
+
+      {/* 구 04 Technical Challenges + 05 Performance — 두 섹션이 형식만
+          다르게 같은 사건(무엇에 막혔고 어떻게 판단해서 풀었나)을 설명하고
+          있어 하나로 합쳤다. */}
+      <SubSection
+        title="문제 해결 딥다이브"
+        description="총 6건. 제목 옆 태그로 먼저 스캔하고, 필요한 카드만 펼쳐서 확인하세요. 수치로 검증되는 사건에는 개선 전/후 지표가 함께 붙습니다."
+      >
+        <ol className="space-y-3">
+          {deepDives.map((deepDive, index) => (
+            <DeepDiveCard
+              key={deepDive.id}
+              deepDive={deepDive}
+              index={index}
+              defaultOpen={index === 0}
+            />
+          ))}
+        </ol>
+      </SubSection>
 
       <SubSection
         title="프로젝트 아키텍처"
@@ -570,12 +753,13 @@ export function FeaturedProject() {
 
         <div className="space-y-3">
           {architecture.layers.map((layer, index) => (
-            <ArchitectureCard
-              key={layer.id}
-              layer={layer}
-              // 첫 카드만 펼쳐둔다 — "이건 열리는 카드"라는 신호를 주기 위해서.
-              defaultOpen={index === 0}
-            />
+            <Reveal key={layer.id}>
+              <ArchitectureCard
+                layer={layer}
+                // 첫 카드만 펼쳐둔다 — "이건 열리는 카드"라는 신호를 주기 위해서.
+                defaultOpen={index === 0}
+              />
+            </Reveal>
           ))}
         </div>
 
@@ -586,6 +770,13 @@ export function FeaturedProject() {
         </p>
         <ArchitectureDiagram diagram={architecture.diagram} />
       </SubSection>
+
+      {/* 구 role.boundaries + performance.notYet — 프로젝트를 다 읽은 사람에게
+          주는 마지막 신뢰 근거. 경계선을 먼저 밝히면 위의 주장 전체가
+          믿을 만해진다. 감췄다가 하나 들키면 나머지도 전부 의심받는다. */}
+      <div className="mt-16">
+        <LimitsSection limits={limits} />
+      </div>
     </Section>
   )
 }

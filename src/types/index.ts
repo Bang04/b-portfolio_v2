@@ -29,19 +29,6 @@ export interface NavItem {
   label: string
 }
 
-/**
- * Project 클러스터 전용 서브 내비게이션 항목.
- * ---------------------------------------------------------------------------
- * Timeline·Challenges·Performance·Principles는 전부 "Project 하나를 깊게
- * 파고드는 딥다이브"이지 최상위 메뉴와 동급인 별개 주제가 아니다.
- * 헤더의 `nav`(최상위 5개)와 분리해 여기서만 노출되는 서브 탭으로 둔다.
- *
- * `NavItem`을 그대로 쓰지 않고 별도 이름을 준 이유:
- * 타입 이름이 "이 배열은 Project 안에서만 쓰인다"는 의도를 드러낸다.
- * 나중에 서브 내비 전용 필드가 필요해져도 NavItem 쪽은 건드리지 않아도 된다.
- */
-export type ProjectNavItem = NavItem
-
 /* ===========================================================================
  * 01. Hero / 02. About Me
  * ========================================================================= */
@@ -97,6 +84,27 @@ export interface HeroCta {
   secondary: { label: string; href: string; download?: boolean }
 }
 
+/**
+ * 원칙이 쓰인 사례로 가는 링크.
+ *
+ * 원칙 문단을 근거와 분리해두는 이유: 근거의 전체 서술은 이미 딥다이브나
+ * limits 블록에 있다. 여기서 다시 풀어 쓰면 같은 사례를 두 번 설명하는
+ * 셈이라, 원칙은 "판단 기준"만 말하고 링크로 원본을 가리킨다.
+ */
+export interface WorkingPrinciple {
+  id: string
+  /** 원칙 문장. 명령형 한 줄이 가장 잘 남는다. */
+  title: string
+  /** 왜 이 원칙을 갖게 됐나 */
+  body: string
+  evidenceRef: {
+    /** 배지에 보이는 짧은 라벨. 예: '2,889 → 2건' */
+    label: string
+    /** 이동할 앵커. 해당 딥다이브/limits 항목의 id를 가리킨다 */
+    href: string
+  }
+}
+
 export interface Profile {
   name: string
   nameEn: string
@@ -130,6 +138,14 @@ export interface Profile {
 
   /** About 본문. 배열 요소 하나가 <p> 하나가 된다. */
   bio: string[]
+
+  /**
+   * 작업 원칙 4개.
+   * 예전엔 별도 섹션(Engineering Principles)이었던 것을 About 안으로 접었다.
+   * 원칙만 따로 늘어놓으면 자기소개서 문장이 되므로, 근거 링크를 필수로 둔다.
+   */
+  workingStyle: WorkingPrinciple[]
+
   location: string
   email: string
   /** src/assets 에서 import 한 이미지 URL (문자열) */
@@ -271,22 +287,6 @@ export interface ProjectGoal {
   measure: string
 }
 
-/**
- * 핵심 기능 하나를 Challenges 카드로 잇는 인덱스 항목.
- *
- * 예전에는 이 자리에 problem/solution 전문을 담은 FeatureItem이 있었다.
- * 문제는 그 내용이 04 Technical Challenges의 problem/approach/result 카드와
- * 거의 1:1로 겹쳤다는 것 — 같은 사건을 두 번 다른 형식으로 설명한 셈이다.
- * 이제 "무엇을 만들었나"의 목록은 여기서 제목만 스캔하게 하고,
- * "어떻게 풀었나"의 전체 서술은 Challenges 한 곳에서만 전담한다.
- */
-export interface FeatureLink {
-  id: string
-  title: string
-  /** 이 항목의 전체 설명이 있는 Challenges 카드 id */
-  challengeId: string
-}
-
 /** 결과 지표 하나 */
 export interface ProjectOutcome {
   id: string
@@ -301,11 +301,11 @@ export interface ProjectResult {
   summary: string
   outcomes: ProjectOutcome[]
   /**
-   * 회고는 여기 없다. "무엇을 배웠나"는 06 Engineering Principles가 전담한다.
-   * 예전엔 이 자리에도 retrospective 배열이 있었는데, Principles의 evidence와
+   * 회고는 여기 없다. "무엇을 배웠나"는 About의 workingStyle이 전담한다.
+   * 예전엔 이 자리에도 retrospective 배열이 있었는데, workingStyle의 evidenceRef와
    * 문장 단위로 겹쳤다 — 같은 교훈을 "회고"와 "원칙"이라는 두 이름으로
    * 두 번 쓴 것이다. 결과는 숫자(outcomes)까지만 말하고, 그 숫자에서
-   * 무엇을 배웠는지는 Principles로 넘긴다.
+   * 무엇을 배웠는지는 workingStyle로 넘긴다.
    */
 }
 
@@ -329,12 +329,51 @@ export interface ProjectRole {
   scope: string
   /** 도메인별로 묶은 담당 업무 */
   domains: RoleDomain[]
-  /**
-   * 솔직한 경계선.
-   * 어디까지가 내가 한 일이고 어디부터가 아닌지를 먼저 밝히면
-   * 나머지 주장 전체의 신뢰도가 올라간다. 감추면 하나 들킬 때 전부 의심받는다.
-   */
-  boundaries: string[]
+}
+
+/**
+ * 하지 못한 것 · 담당하지 않은 것 하나.
+ * ---------------------------------------------------------------------------
+ * 예전엔 role.boundaries(담당 밖 범위)와 performance.notYet(적용 못한 개선)
+ * 두 곳에 나뉘어 있었다. 읽는 사람 입장에서는 "이 사람이 어디까지 했나"라는
+ * 하나의 질문이므로 한 블록으로 합친다. `kind`로 종류만 구분한다.
+ *   scope      담당 범위 밖 (다른 사람의 몫)
+ *   unfinished 만들다 만 것 (내 몫이었지만 못 끝낸 것)
+ *   learning   아직 경험·측정이 없는 것
+ */
+export interface ProjectLimit {
+  kind: 'scope' | 'unfinished' | 'learning'
+  title: string
+  note: string
+}
+
+/** 딥다이브 태그. 사건의 종류를 드러내는 한 단어. */
+export type DeepDiveTag = '성능' | '데이터' | '구조' | '판단' | '도메인'
+
+/**
+ * 딥다이브 하나 = 면접 질문 하나.
+ * ---------------------------------------------------------------------------
+ * 예전엔 Technical Challenges(problem/approach/result)와 Performance
+ * (situation/causes/solutions/metric)가 형식만 다른 별개 섹션이었는데,
+ * 실제로는 같은 종류의 사건 — "무엇이 문제였고 어떻게 판단해서 풀었나" —
+ * 을 다른 틀로 두 번 설명하고 있었다. 하나로 합치고, 수치가 있는 사건만
+ * `metric`을 채운다(선택 필드).
+ */
+export interface DeepDive {
+  id: string
+  title: string
+  tag: DeepDiveTag
+  /** 무엇이 문제였나 (상황과 제약) */
+  problem: string
+  /** 어떻게 접근했나 (판단과 근거) */
+  approach: string
+  /** 무엇이 달라졌나 */
+  result: string
+  /** 수치로 검증되는 사건에만 채운다 */
+  metric?: PerfMetric
+  /** 이 사건에서 무엇을 배웠나 */
+  learned: string
+  keywords: string[]
 }
 
 export interface FeaturedProject {
@@ -351,19 +390,23 @@ export interface FeaturedProject {
   /**
    * 서술 순서 = 읽는 사람이 납득해 가는 순서.
    *   overview  이게 뭔가
-   *   goals     왜 필요했나        ← 여기가 없으면 아래 전부가 "할 일 목록"이 된다
+   *   goals     왜 필요했나   ← 여기가 없으면 아래 전부가 "할 일 목록"이 된다
    *   role      그중 내가 한 건 뭔가
-   *   techStack   무엇으로 했나
-   *   featureIndex 무엇을 만들었나 (제목만 — 전체 서술은 04 Challenges)
-   *   result      그래서 뭐가 달라졌나
+   *   techStack 무엇으로 했나
+   *   result    그래서 뭐가 달라졌나
    */
   overview: string[]
   goals: ProjectGoal[]
   role: ProjectRole
   techStack: SkillCategory[]
-  featureIndex: FeatureLink[]
   result: ProjectResult
-  /** 심화 — 위 6단계를 다 읽은 사람에게만 필요한 설계 상세 */
+  /**
+   * 심화 — 위 5단계를 다 읽은 사람에게만 필요한 설계 상세.
+   * deepDives: 무엇에 막혔고 어떻게 판단해서 풀었나 (구 Challenges + Performance)
+   * limits: 어디까지가 내 몫이고, 무엇을 아직 못 했나 (구 role.boundaries + performance.notYet)
+   */
+  deepDives: DeepDive[]
+  limits: ProjectLimit[]
   architecture: ArchitectureSpec
   links: ProjectLink[]
 }
@@ -396,39 +439,10 @@ export interface TimelineWeek {
 }
 
 /* ===========================================================================
- * 04. Technical Challenges
- * ========================================================================= */
-
-export type ChallengeTag =
-  | 'architecture'
-  | 'map'
-  | 'state'
-  | 'form'
-  | 'data'
-  | 'component'
-  | 'parsing'
-  | 'infra'
-
-/**
- * 기술적 도전 하나 = 면접 질문 하나.
- * problem → approach → result 순서를 타입으로 고정해
- * "이런 걸 만들었습니다" 같은 밋밋한 서술이 끼어들 자리를 없앤다.
- */
-export interface Challenge {
-  id: string
-  title: string
-  tag: ChallengeTag
-  /** 무엇이 문제였나 (상황과 제약) */
-  problem: string
-  /** 어떻게 접근했나 (판단과 근거) */
-  approach: string
-  /** 무엇이 달라졌나 (가능하면 숫자) */
-  result: string
-  keywords: string[]
-}
-
-/* ===========================================================================
- * 05. Performance Optimization
+ * Featured Project — 딥다이브 수치
+ * ---------------------------------------------------------------------------
+ * 예전엔 04 Technical Challenges(Challenge)와 05 Performance(PerfCase)로
+ * 나뉘어 있었다. DeepDive로 합치면서 수치 부분만 이 타입으로 남는다.
  * ========================================================================= */
 
 /** 개선 전/후 수치. 셋 다 필수 — 하나라도 비면 그건 측정이 아니다. */
@@ -438,61 +452,6 @@ export interface PerfMetric {
   after: string
   /** 예: '−99.9%', '−54KB' */
   delta: string
-}
-
-export interface PerfCase {
-  id: string
-  title: string
-  /** 어떤 증상이 있었나 */
-  situation: string
-  /** 원인 분석 결과 (복수일 수 있다) */
-  causes: string[]
-  /** 어떻게 고쳤나 */
-  solutions: string[]
-  metric: PerfMetric
-  /** 무엇으로 검증했나. 이 필드가 없으면 위 숫자는 주장일 뿐이다. */
-  verification: string
-}
-
-export interface PerformanceSpec {
-  cases: PerfCase[]
-  /** 아직 적용하지 못한 것들. 숨기지 않고 '다음 과제'로 적는다. */
-  notYet: { title: string; reason: string }[]
-}
-
-/* ===========================================================================
- * 06. Engineering Principles
- * ========================================================================= */
-
-export type PrincipleIconName =
-  | 'ruler'
-  | 'shield'
-  | 'puzzle'
-  | 'merge'
-  | 'book'
-  | 'flag'
-
-export interface Principle {
-  id: string
-  icon: PrincipleIconName
-  /** 원칙 문장. 명령형 한 줄이 가장 잘 남는다. */
-  title: string
-  /** 왜 이 원칙을 갖게 됐나 */
-  body: string
-  /**
-   * 이 원칙이 쓰인 사례로 가는 링크.
-   *
-   * 예전엔 이 자리에 사례를 문단으로 풀어 쓴 `evidence: string`이 있었는데,
-   * 그 문단은 대개 Performance나 Challenges에 이미 있는 문장의 재서술이었다.
-   * 원칙은 "판단을 관통하는 기준"만 말하고, 근거의 전체 서술은 원본 섹션
-   * 하나에만 두기 위해 링크로 바꿨다 — 같은 사례를 두 번 설명하지 않는다.
-   */
-  evidenceRef: {
-    /** 배지에 보이는 짧은 라벨. 예: '번들 최적화 (Performance)' */
-    label: string
-    /** 이동할 앵커. 해당 Challenge/Performance 카드의 id를 가리킨다 */
-    href: string
-  }
 }
 
 /* ===========================================================================
@@ -572,13 +531,8 @@ export interface ContactConfig {
 export interface PortfolioData {
   profile: Profile
   nav: NavItem[]
-  /** Project 클러스터(Project·Timeline·Challenges·Performance·Principles) 서브 내비게이션 */
-  projectNav: ProjectNavItem[]
   featuredProject: FeaturedProject
   timeline: TimelineWeek[]
-  challenges: Challenge[]
-  performance: PerformanceSpec
-  principles: Principle[]
   projects: Project[]
   experiences: Experience[]
   contact: ContactConfig
