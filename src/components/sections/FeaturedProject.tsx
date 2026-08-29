@@ -2,6 +2,7 @@ import type { ComponentType, ReactNode } from 'react'
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowUpRight,
   ChevronRight,
   Code,
   Database,
@@ -10,7 +11,6 @@ import {
   Layers,
   Map,
   Server,
-  Target,
   Wrench,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -24,11 +24,11 @@ import type { BrandIconProps } from '@/components/common/BrandIcons'
 import type {
   ArchitectureLayer,
   DeepDive,
-  ProjectGoal,
   ProjectLimit,
   ProjectLinkType,
   SkillIconName,
   SkillLevel,
+  TurningPoint,
 } from '@/types'
 
 /* ---------------------------------------------------------------------------
@@ -202,65 +202,6 @@ function ArchitectureCard({
 }
 
 /**
- * 목표 카드 — 불편(problem) → 목표(goal) → 판정 기준(measure)
- * ---------------------------------------------------------------------------
- * problem을 먼저 보여주는 순서가 이 카드의 전부다.
- * "지도 기반 관제 화면 구축"으로 시작하면 그건 할 일 목록이지 목표가 아니다.
- * 목표는 언제나 "지금 무엇이 불편한가"에서 나온다.
- */
-function GoalCard({ goal, index }: { goal: ProjectGoal; index: number }) {
-  return (
-    // motion.li: 목표 5개가 2열 그리드에 거의 동시에 나타나므로, 카드마다
-    // 약간의 시차(delay)를 줘 순서대로 켜지는 느낌을 살렸다.
-    <motion.li
-      className="card flex flex-col p-5"
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={REVEAL_VIEWPORT}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: REVEAL_EASE }}
-    >
-      <div className="mb-3 flex items-start gap-3">
-        {/* tabular-nums: 숫자 폭 고정 — 01, 02… 가 세로로 정렬된다 */}
-        <span className="font-mono text-xs text-zinc-300 tabular-nums dark:text-zinc-700">
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <h4 className="text-[15px] leading-snug font-bold">{goal.title}</h4>
-      </div>
-
-      <div className="space-y-3.5">
-        <div>
-          <p className="mb-1 font-mono text-[10.5px] font-semibold tracking-wider text-zinc-400 uppercase">
-            문제 · 무엇이 불편했나
-          </p>
-          <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-            {goal.problem}
-          </p>
-        </div>
-
-        <div className="border-accent-300 dark:border-accent-500/40 rounded-r-lg border-l-2 bg-zinc-50 py-3 pr-3 pl-4 dark:bg-zinc-800/40">
-          <p className="text-accent-700 dark:text-accent-400 mb-1 font-mono text-[10.5px] font-semibold tracking-wider uppercase">
-            목표 · 그래서 무엇을 하려 했나
-          </p>
-          <p className="text-[13.5px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            {goal.goal}
-          </p>
-        </div>
-      </div>
-
-      {/* mt-auto: 카드 높이가 달라도 판정 기준 줄을 바닥에 정렬시킨다.
-          이 줄이 05 결과 섹션과 짝을 이룬다 —
-          판정 방법이 없는 목표는 목표가 아니라 소망이다. */}
-      <div className="mt-auto flex gap-2 pt-4 text-[12.5px] leading-relaxed text-zinc-500">
-        <Target size={13} aria-hidden="true" className="mt-0.5 shrink-0" />
-        <span>
-          <span className="font-semibold">판정 기준</span> · {goal.measure}
-        </span>
-      </div>
-    </motion.li>
-  )
-}
-
-/**
  * 딥다이브 카드 — <details>/<summary> 아코디언
  * ---------------------------------------------------------------------------
  * 구 Technical Challenges의 ChallengeCard와 구 Performance의 PerfCaseCard를
@@ -399,6 +340,40 @@ function DeepDiveCard({
 }
 
 /**
+ * 진행 타임라인 — 구 별도 Timeline 섹션 (구 TimelineWeek → TurningPoint)
+ * ---------------------------------------------------------------------------
+ * 예전엔 각 구간마다 work[]/learned 전체를 서술했는데, 그러면 마커 렌더링
+ * 같은 사건이 헤더·딥다이브·타임라인 세 곳에서 반복 서술된다. 한 줄로만
+ * 압축하고, 전체 서사는 관련 딥다이브 링크로 넘긴다 — 여기는 신호등이다.
+ */
+function TurningPointRow({ point }: { point: TurningPoint }) {
+  return (
+    <li
+      id={point.id}
+      className="scroll-mt-32 flex flex-wrap gap-x-3 gap-y-1 border-b border-zinc-100 py-3 last:border-0 dark:border-zinc-800"
+    >
+      <span className="shrink-0 font-mono text-[11px] font-semibold tracking-wide text-zinc-400">
+        {point.month}
+      </span>
+      <div className="min-w-0 flex-1 text-[13.5px] leading-relaxed">
+        <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+          {point.title}
+        </span>
+        <span className="text-zinc-500 dark:text-zinc-400"> — {point.description}</span>
+        {point.link && (
+          <a
+            href={point.link.href}
+            className="text-accent-600 dark:text-accent-400 ml-1.5 font-medium hover:underline"
+          >
+            → {point.link.label}
+          </a>
+        )}
+      </div>
+    </li>
+  )
+}
+
+/**
  * "하지 못한 것들" — 구 role.boundaries(담당 밖) + performance.notYet(적용 못한 개선)
  * ---------------------------------------------------------------------------
  * kind 별로 묶어서 보여준다. 종류가 다른 세 가지 "못 한 것"을 한 줄로 섞으면
@@ -420,9 +395,12 @@ function LimitsSection({ limits }: { limits: ProjectLimit[] }) {
       id="project-limits"
       className="scroll-mt-32 rounded-2xl border border-dashed border-zinc-300 p-6 dark:border-zinc-700"
     >
-      <p className="mb-4 flex items-center gap-1.5 text-[15px] font-bold">
+      <p className="mb-1 flex items-center gap-1.5 text-[15px] font-bold">
         <AlertTriangle size={14} aria-hidden="true" className="text-zinc-400" />
         하지 못한 것들
+      </p>
+      <p className="mb-4 text-[12.5px] text-zinc-500">
+        완성되지 않은 것은 완성되지 않았다고 씁니다.
       </p>
 
       <div className="space-y-6">
@@ -458,12 +436,13 @@ export function FeaturedProject() {
     domain,
     team,
     client,
-    overview,
+    summary,
     goals,
     role,
     techStack,
     result,
     deepDives,
+    turningPoints,
     limits,
     architecture,
     links,
@@ -488,6 +467,10 @@ export function FeaturedProject() {
           </div>
         </div>
 
+        <p className="mt-3 text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {summary}
+        </p>
+
         {/* 기간 · 인원 · 담당범위 --------------------------------------
             인원을 밝히는 게 손해처럼 느껴질 수 있지만 반대다.
             팀 규모가 없으면 읽는 사람은 "혼자 다 했나?"를 추측해야 하고,
@@ -510,12 +493,43 @@ export function FeaturedProject() {
           ))}
         </dl>
 
+        {/* 역할 · 목표 요약 ----------------------------------------------
+            상세 내용(문제→목표→판정 기준, 도메인별 담당 업무)은 본문에서
+            빼고 헤더에 결론만 압축해 둔다. Other Projects 카드와 같은 문법 —
+            한 줄 역할 + 화살표 불릿 목록. */}
+        <div className="mt-5 border-t border-zinc-100 pt-5 dark:border-zinc-800">
+          <p className="text-[13px] text-zinc-500">
+            <span className="font-semibold text-zinc-600 dark:text-zinc-400">
+              역할
+            </span>{' '}
+            · {role.scope}
+          </p>
+          <p className="mt-4 font-mono text-[10.5px] font-semibold tracking-wider text-zinc-400 uppercase">
+            프로젝트 목표
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {goals.map((goal) => (
+              <li
+                key={goal.id}
+                className="flex gap-2 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400"
+              >
+                <ArrowUpRight
+                  size={13}
+                  aria-hidden="true"
+                  className="text-accent-500 mt-1 shrink-0"
+                />
+                <span>{goal.title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* 핵심 성과 미리보기 ---------------------------------------------
-            같은 데이터를 05 결과 섹션에서 다시 자세히 설명하므로 값을
+            같은 데이터를 02 결과 섹션에서 다시 자세히 설명하므로 값을
             복제해 두지 않는다. result.outcomes 앞 4개를 그대로 가져와
             숫자만 먼저 보여준다 — 스크롤 없이 "이 프로젝트가 뭘 해냈는지"를
             3초 안에 스캔하게 하려는 목적으로, 아래에서 근거를 확인할 수
-            있다는 걸 안내(→ 05 프로젝트 결과)해 뒤로 미룬 설명을 찾기 쉽게 한다. */}
+            있다는 걸 안내(→ 02 프로젝트 결과)해 뒤로 미룬 설명을 찾기 쉽게 한다. */}
         <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-zinc-100 pt-5 sm:grid-cols-4 dark:border-zinc-800">
           {result.outcomes.slice(0, 4).map((outcome, index) => (
             <motion.div
@@ -538,7 +552,7 @@ export function FeaturedProject() {
           href="#project-result"
           className="text-accent-600 dark:text-accent-400 mt-4 inline-block text-[12px] font-medium hover:underline"
         >
-          근거 자세히 보기 → 05 프로젝트 결과
+          근거 자세히 보기 → 02 프로젝트 결과
         </a>
 
         {links.length > 0 && (
@@ -563,63 +577,9 @@ export function FeaturedProject() {
         )}
       </div>
 
-      {/* ── 01. 프로젝트 소개 ─────────────────────────────────────────── */}
-      <SubSection step="01" title="프로젝트 소개">
-        <div className="space-y-4 text-[15px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
-          {overview.map((paragraph, index) => (
-            // key로 index를 쓰는 것은 보통 안티패턴이지만, 이 배열은 정적이고
-            // 순서가 절대 바뀌지 않으므로 안전하다.
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
-      </SubSection>
-
-      {/* ── 02. 프로젝트 목표 ─────────────────────────────────────────── */}
+      {/* ── 01. 기술 스택 ─────────────────────────────────────────────── */}
       <SubSection
-        step="02"
-        title="프로젝트 목표"
-        description="“무엇을 만든다”가 아니라 “무엇이 불편한가”에서 출발해 정리했습니다. 각 목표에는 달성 여부를 판정할 기준을 함께 적었고, 그 결과는 06에서 다시 확인합니다."
-      >
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {goals.map((goal, index) => (
-            <GoalCard key={goal.id} goal={goal} index={index} />
-          ))}
-        </ul>
-      </SubSection>
-
-      {/* ── 03. 담당 역할 ─────────────────────────────────────────────── */}
-      <SubSection step="03" title="담당 역할" description={role.scope}>
-        {/* 도메인 단위로 묶는다.
-            기능을 평평하게 나열하면 "무엇을 타이핑했나"만 보이고,
-            도메인으로 묶으면 "무엇을 책임졌나"가 보인다. */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          {role.domains.map((rd) => (
-            <div key={rd.id} className="card p-5">
-              <h4 className="text-accent-700 dark:text-accent-400 mb-3 font-mono text-[12px] font-semibold tracking-wider uppercase">
-                {rd.title}
-              </h4>
-              <ul className="space-y-2">
-                {rd.items.map((item) => (
-                  <li
-                    key={item}
-                    className="flex gap-2.5 text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-400"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="bg-accent-400 mt-[0.62em] size-1.5 shrink-0 rounded-full"
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </SubSection>
-
-      {/* ── 04. 기술 스택 ─────────────────────────────────────────────── */}
-      <SubSection
-        step="04"
+        step="01"
         title="기술 스택"
         description="이름만 나열하면 로고 모음일 뿐입니다. 각 항목에 이 프로젝트에서 무엇에 썼는지를 함께 적었습니다. 점선 표기는 부분 사용/학습 중인 항목입니다."
       >
@@ -661,12 +621,12 @@ export function FeaturedProject() {
         </div>
       </SubSection>
 
-      {/* ── 05. 프로젝트 결과 ─────────────────────────────────────────── */}
+      {/* ── 02. 프로젝트 결과 ─────────────────────────────────────────── */}
       <div id="project-result" className="scroll-mt-32">
         <SubSection
-          step="05"
+          step="02"
           title="프로젝트 결과"
-          description="02에서 세운 목표의 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
+          description="헤더의 프로젝트 목표에서 세운 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
         >
         <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
           {result.summary}
@@ -714,7 +674,7 @@ export function FeaturedProject() {
       </div>
 
       {/* ── 심화: 딥다이브 · 아키텍처 · 하지 못한 것들 ─────────────────
-          step 번호를 주지 않은 이유: 위 01~05는 프로젝트를 이해하는 데
+          step 번호를 주지 않은 이유: 위 01~02는 프로젝트를 이해하는 데
           필요한 최소 흐름이고, 아래는 그걸 다 읽은 사람에게만 필요한
           상세다. 같은 번호 체계에 넣으면 "여기까지 읽어야 한다"는
           압박이 생기고, 이탈 지점이 앞당겨진다. */}
@@ -729,7 +689,7 @@ export function FeaturedProject() {
           있어 하나로 합쳤다. */}
       <SubSection
         title="문제 해결 딥다이브"
-        description="총 6건. 제목 옆 태그로 먼저 스캔하고, 필요한 카드만 펼쳐서 확인하세요. 수치로 검증되는 사건에는 개선 전/후 지표가 함께 붙습니다."
+        description="총 4건. 제목 옆 태그로 먼저 스캔하고, 필요한 카드만 펼쳐서 확인하세요. 수치로 검증되는 사건에는 개선 전/후 지표가 함께 붙습니다."
       >
         <ol className="space-y-3">
           {deepDives.map((deepDive, index) => (
@@ -769,6 +729,17 @@ export function FeaturedProject() {
           바뀌면 배열 하나만 고치면 되며, 텍스트라서 검색과 스크린리더에도 잡힙니다.
         </p>
         <ArchitectureDiagram diagram={architecture.diagram} />
+      </SubSection>
+
+      <SubSection
+        title="진행 타임라인"
+        description="6개 시점의 판단이 바뀐 지점만 남겼습니다. 자세한 이야기는 관련 딥다이브로 이어집니다."
+      >
+        <ol>
+          {turningPoints.map((point) => (
+            <TurningPointRow key={point.id} point={point} />
+          ))}
+        </ol>
       </SubSection>
 
       {/* 구 role.boundaries + performance.notYet — 프로젝트를 다 읽은 사람에게

@@ -1,6 +1,7 @@
 import { ArrowRight, Download, MapPin } from 'lucide-react'
 import { profile } from '@/data/portfolioData'
 import { SOCIAL_ICONS } from '@/components/common/socialIcons'
+import { CountUp } from '@/components/common/CountUp'
 
 /**
  * Hero — 첫 화면
@@ -19,7 +20,7 @@ import { SOCIAL_ICONS } from '@/components/common/socialIcons'
  * Hero가 팔아야 하는 건 산출물이 아니라 **판단의 방식**이다.
  */
 export function Hero() {
-  const { headline, oneLiner, heroIntro, keywords, cta } = profile
+  const { headline, oneLiner, heroIntro, keywords, cta, stats } = profile
 
   return (
     // id="top" — 헤더 로고와 푸터 '맨 위로' 버튼의 앵커
@@ -104,6 +105,26 @@ export function Hero() {
               </li>
             ))}
           </ul>
+
+          {/* 대표 숫자 3개 ---------------------------------------------------
+              구 About 섹션의 숫자 지표를 옮겨왔다. About은 "어떻게 일하는가"만
+              말하고, 검증 가능한 숫자는 근거가 함께 있는 Hero/Project에 몰아
+              둔다 — 같은 숫자를 두 섹션에서 반복하지 않기 위해서다. */}
+          <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <dd className="font-mono text-xl font-bold text-zinc-900 tabular-nums dark:text-zinc-50">
+                  <CountUp text={stat.value} />
+                  {stat.suffix && (
+                    <span className="text-accent-500 ml-0.5 text-sm font-medium">
+                      {stat.suffix}
+                    </span>
+                  )}
+                </dd>
+                <dt className="mt-0.5 text-xs text-zinc-500">{stat.label}</dt>
+              </div>
+            ))}
+          </dl>
 
           {/* 소개 3줄 ------------------------------------------------------
               세로 라인(border-l)으로 묶어 "이 셋은 한 덩어리"임을 보여준다.

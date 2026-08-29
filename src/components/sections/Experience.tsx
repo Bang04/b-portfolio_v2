@@ -139,7 +139,7 @@ export function Experience() {
       id="experience"
       eyebrow="Experience"
       title="경력 · 학력"
-      description="맡았던 일과 그로 인해 달라진 결과를 함께 적었습니다."
+      description="PHP·MySQL 서비스 개발에서 시작해 태양광 모니터링, React 기반 웹 서비스를 거쳐 지금은 재난안전 관제 시스템을 만들고 있습니다. 맡았던 일과 그로 인해 달라진 결과를 함께 적었습니다."
     >
       <div className="space-y-14">
         {groups.map((group) => (

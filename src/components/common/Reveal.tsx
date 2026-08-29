@@ -7,8 +7,8 @@ export const REVEAL_VIEWPORT = { once: true, margin: '-10% 0px' } as const
 /**
  * Reveal — 스크롤로 들어올 때 한 번만 떠오르는 연출
  * ---------------------------------------------------------------------------
- * 급경사지 프로젝트 섹션(Timeline · Featured Project · About)과 Other
- * Projects의 스크린샷 갤러리처럼 스크롤이 유독 긴 곳에만 쓴다. 애니메이션이
+ * 급경사지 프로젝트 섹션(Featured Project · About)과 Other Projects의
+ * 스크린샷 갤러리처럼 스크롤이 유독 긴 곳에만 쓴다. 애니메이션이
  * 그 길이를 지루하지 않게 끊어주는 역할을 하는 곳에만 넣고, 짧은 섹션에는
  * 넣지 않는다. 전역에 뿌리면 장식이 목적을 잃고 반복되는 틱이 된다.
  *

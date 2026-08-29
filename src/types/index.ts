@@ -140,7 +140,7 @@ export interface Profile {
   bio: string[]
 
   /**
-   * 작업 원칙 4개.
+   * 작업 원칙 3개.
    * 예전엔 별도 섹션(Engineering Principles)이었던 것을 About 안으로 접었다.
    * 원칙만 따로 늘어놓으면 자기소개서 문장이 되므로, 근거 링크를 필수로 둔다.
    */
@@ -268,23 +268,13 @@ export interface ProjectLink {
 /**
  * 프로젝트 목표 하나.
  *
- * `goal` 만 받지 않고 `problem` 을 먼저 요구하는 이유가 이 타입의 전부다.
- * "지도 기반 관제 화면 구축"은 목표가 아니라 할 일 목록이다.
- * 목표는 언제나 "지금 무엇이 불편한가"에서 나오고, 그 출처를 적지 않으면
- * 읽는 사람은 이 프로젝트가 왜 존재하는지 알 수 없다.
- *
- * `measure` 는 목표와 결과 섹션을 잇는 다리다.
- * 달성 여부를 판정할 방법이 없는 목표는 목표가 아니라 소망이다.
+ * 헤더의 "역할 · 목표 요약" 블록에서 제목만 훑을 수 있게 하는 용도라
+ * 제목 한 줄만 받는다. 목표의 배경(문제/판정 기준)은 같은 이야기를
+ * 더 깊이 다루는 딥다이브·아키텍처가 전담하므로 여기서 다시 풀지 않는다.
  */
 export interface ProjectGoal {
   id: string
   title: string
-  /** 무엇이 불편했나 (목표의 출처) */
-  problem: string
-  /** 그래서 무엇을 목표로 삼았나 */
-  goal: string
-  /** 달성 여부를 무엇으로 판정하나 */
-  measure: string
 }
 
 /** 결과 지표 하나 */
@@ -310,25 +300,16 @@ export interface ProjectResult {
 }
 
 /**
- * 담당 역할을 도메인 단위로 묶는다.
+ * 담당 역할.
  *
- * 기능 단위로 나열하면("마커 클러스터링 구현, 탭 구현, 필터 구현…")
- * 읽는 사람은 이 사람이 **무엇을 책임졌는지**가 아니라
- * **무엇을 타이핑했는지**만 알게 된다.
- * 도메인으로 묶으면 "이 영역은 이 사람 것"이라는 소유 범위가 보인다.
+ * 도메인별 세부 업무는 예전엔 별도 배열(RoleDomain[])로 나열했지만,
+ * 그 내용은 딥다이브·아키텍처·경력(Experience)에 이미 더 깊이 서술돼 있어
+ * 여기서 다시 나열하면 같은 사실을 세 번째로 말하는 셈이었다.
+ * 지금은 담당 범위를 한 문장으로만 요약한다.
  */
-export interface RoleDomain {
-  id: string
-  /** 예: '신규 등록' */
-  title: string
-  items: string[]
-}
-
 export interface ProjectRole {
-  /** 담당 범위 한 줄 요약 */
+  /** 담당 범위 요약 */
   scope: string
-  /** 도메인별로 묶은 담당 업무 */
-  domains: RoleDomain[]
 }
 
 /**
@@ -348,7 +329,7 @@ export interface ProjectLimit {
 }
 
 /** 딥다이브 태그. 사건의 종류를 드러내는 한 단어. */
-export type DeepDiveTag = '성능' | '데이터' | '구조' | '판단' | '도메인'
+export type DeepDiveTag = '성능' | '데이터' | '구조'
 
 /**
  * 딥다이브 하나 = 면접 질문 하나.
@@ -380,6 +361,8 @@ export interface FeaturedProject {
   id: string
   title: string
   subtitle: string
+  /** 헤더 카드에 넣는 2줄 이내 요약. overview 전체를 대신해 카드에서 보여준다. */
+  summary: string
   period: string
   /** 예: '재난안전 · 급경사지 관제' */
   domain: string
@@ -389,53 +372,49 @@ export interface FeaturedProject {
   client: string
   /**
    * 서술 순서 = 읽는 사람이 납득해 가는 순서.
-   *   overview  이게 뭔가
-   *   goals     왜 필요했나   ← 여기가 없으면 아래 전부가 "할 일 목록"이 된다
-   *   role      그중 내가 한 건 뭔가
+   *   summary   이게 뭔가 (헤더 카드 2줄 요약)
+   *   goals     왜 필요했나 (제목만 — 배경은 딥다이브가 전담)
+   *   role      그중 내가 한 건 뭔가 (한 줄 요약)
    *   techStack 무엇으로 했나
    *   result    그래서 뭐가 달라졌나
    */
-  overview: string[]
   goals: ProjectGoal[]
   role: ProjectRole
   techStack: SkillCategory[]
   result: ProjectResult
   /**
-   * 심화 — 위 5단계를 다 읽은 사람에게만 필요한 설계 상세.
+   * 심화 — 위를 다 읽은 사람에게만 필요한 설계 상세.
    * deepDives: 무엇에 막혔고 어떻게 판단해서 풀었나 (구 Challenges + Performance)
+   * turningPoints: 시간 순으로 판단이 바뀐 지점만 압축한 진행 타임라인 (구 별도 Timeline 섹션)
    * limits: 어디까지가 내 몫이고, 무엇을 아직 못 했나 (구 role.boundaries + performance.notYet)
    */
   deepDives: DeepDive[]
+  turningPoints: TurningPoint[]
   limits: ProjectLimit[]
   architecture: ArchitectureSpec
   links: ProjectLink[]
 }
 
 /* ===========================================================================
- * Development Timeline
+ * Featured Project — 진행 타임라인 (구 TimelineWeek)
  * ---------------------------------------------------------------------------
- * 타임라인이 실패하는 방식은 하나다 — 작업 로그가 되는 것.
- * "1주차: A 구현, 2주차: B 구현"은 읽는 사람에게 아무 정보도 주지 않는다.
- * 이력서에서 타임라인이 가치를 갖는 건 **판단이 바뀐 지점**이 보일 때뿐이다.
- *
- * 그래서 `learned` 를 필수로 뒀다. 그 주에 무엇을 했는지(work)와
- * 그 일을 하며 생각이 어떻게 바뀌었는지(learned)는 다른 정보다.
- * 후자를 못 쓰겠는 주차는 그냥 시간이 흘렀을 뿐 성장한 주가 아니다.
+ * 예전엔 독립 섹션이었고 각 주차마다 work[]/learned 전체를 서술했는데,
+ * 같은 사건(특히 렌더링 성능 문제)이 대표 프로젝트 헤더·딥다이브·타임라인
+ * 세 곳에서 반복 서술되는 문제가 있었다. 지금은 "그 시점에 무엇이
+ * 바뀌었는가"를 한 줄로만 남기고, 전체 서사는 딥다이브가 전담한다.
+ * 여기는 딥다이브로 가는 신호등 역할만 한다.
  * ========================================================================= */
 
-export interface TimelineWeek {
+export interface TurningPoint {
   id: string
-  /** 'Week 1' */
-  label: string
-  /** 그 주를 한 단어로. 예: '만들기', '부딪히기' */
-  phase: string
+  /** '7월 초' 같은 짧은 시점 라벨 */
+  month: string
+  /** 그 시점을 한 구절로 */
   title: string
-  /** 그 주에 실제로 한 일 */
-  work: string[]
-  /** 그 주에 배운 것 · 판단이 바뀐 지점 */
-  learned: string
-  /** 근거가 확인되지 않은 부분에 대한 솔직한 표기 (선택) */
-  note?: string
+  /** 무엇이 어떻게 바뀌었는지 한 줄 */
+  description: string
+  /** 관련 딥다이브 카드로 가는 앵커. 없으면 링크 없이 텍스트만 노출 */
+  link?: { label: string; href: string }
 }
 
 /* ===========================================================================
@@ -544,7 +523,6 @@ export interface PortfolioData {
   profile: Profile
   nav: NavItem[]
   featuredProject: FeaturedProject
-  timeline: TimelineWeek[]
   projects: Project[]
   experiences: Experience[]
   contact: ContactConfig

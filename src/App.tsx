@@ -3,9 +3,8 @@ import { Footer } from '@/components/common/Footer'
 import { Hero } from '@/components/sections/Hero'
 import { About } from '@/components/sections/About'
 import { FeaturedProject } from '@/components/sections/FeaturedProject'
-import { Timeline } from '@/components/sections/Timeline'
-import { OtherProjects } from '@/components/sections/OtherProjects'
 import { Experience } from '@/components/sections/Experience'
+import { OtherProjects } from '@/components/sections/OtherProjects'
 import { Contact } from '@/components/sections/Contact'
 
 /**
@@ -18,22 +17,27 @@ import { Contact } from '@/components/sections/Contact'
  * 섹션 순서 = 읽는 사람이 판단을 내리는 순서
  *  01 Hero          누구인가
  *  02 About Me      어떤 사람인가 + 일하는 방식
- *  03 Featured      가장 잘 아는 것 하나를 깊게 (소개 → 목표 → 역할 → 스택 → 결과 → 딥다이브)
- *  04 Timeline      그 결과에 도달하기까지 판단이 어떻게 바뀌었나
- *  05 Others        폭(breadth)의 증거
- *  06 Experience    이력의 사실관계
- *  07 Contact       다음 행동
+ *  03 Featured      가장 잘 아는 것 하나를 깊게 (목표 → 역할 → 스택 → 결과 → 딥다이브 → 아키텍처 → 타임라인 → 못 한 것)
+ *  04 Experience    이력의 폭 — 경력의 신뢰를 먼저 준다
+ *  05 Others        개인 학습·과거 프로젝트의 폭
+ *  06 Contact       다음 행동
  *
- * Timeline을 03 바로 뒤에 둔 이유:
- *  03이 "무엇을 만들었나"의 완성된 모습이라면, 04는 거기 도달하기까지의 과정이다.
- *  결과를 먼저 보여준 직후여야 "저걸 어떻게 했지?"라는 질문이 살아 있다.
- *  뒤로 밀면 이미 궁금증이 식은 뒤라 그냥 작업 로그로 읽힌다.
+ * 예전엔 Timeline이 03 바로 뒤에 독립 섹션으로 있었다. 그런데 각 구간을
+ * work[]/learned로 풀어 쓰다 보니 마커 렌더링 성능 이슈 같은 사건이
+ * 헤더(03) · 딥다이브(03) · 타임라인(04) 세 곳에서 반복 서술됐다.
+ * 지금은 Timeline을 03 안의 압축된 서브섹션(진행 타임라인)으로 흡수해
+ * 같은 이야기를 한 번만 하도록 정리했다.
+ *
+ * Experience를 Others보다 앞에 둔 이유:
+ *  Others(개인 학습 프로젝트)를 먼저 보여주면 "혼자 만든 것"이 회사 경력보다
+ *  먼저 읽힌다. 경력의 폭으로 신뢰를 먼저 준 다음, 개인 프로젝트로 학습
+ *  의지를 보여주는 순서가 낫다고 판단했다.
  *
  * 왜 Skills를 독립 섹션으로 두지 않았나?
  *  "React를 씁니다"는 정보가 아니다. "이 프로젝트에서 React로 무엇을 했나"가 정보다.
  *  스택을 쓴 맥락에서 떼어내면 남는 건 로고 나열뿐이라, 03 안으로 넣었다.
  *
- * 예전엔 Challenges·Performance·Principles가 04~07로 독립해 있었다.
+ * 예전엔 Challenges·Performance·Principles가 독립 섹션으로 있었다.
  *  세 섹션 모두 "Project 하나를 깊게 파고드는 딥다이브"였을 뿐 About·Others와
  *  동급인 별개 주제가 아니었고, 같은 사건을 형식만 바꿔 여러 번 설명하고
  *  있었다. Challenges·Performance는 03 안의 "딥다이브"로, Principles는
@@ -52,9 +56,8 @@ export default function App() {
         <Hero />
         <About />
         <FeaturedProject />
-        <Timeline />
-        <OtherProjects />
         <Experience />
+        <OtherProjects />
         <Contact />
       </main>
 
