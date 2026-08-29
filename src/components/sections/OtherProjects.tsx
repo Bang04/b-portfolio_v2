@@ -136,14 +136,10 @@ function ProjectCard({ project }: { project: Project }) {
       )}
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="mb-2 flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-base font-bold">{project.title}</h3>
-            <p className="mt-0.5 text-sm text-zinc-500">{project.subtitle}</p>
-          </div>
-          <span className="shrink-0 font-mono text-[11px] whitespace-nowrap text-zinc-400">
-            {project.period}
-          </span>
+        <div className="mb-2">
+          <h3 className="text-base font-bold">{project.title}</h3>
+          <p className="mt-0.5 text-sm text-zinc-500">{project.subtitle}</p>
+          <p className="mt-1 font-mono text-[11px] text-zinc-400">{project.period}</p>
         </div>
 
         <p className="mt-2 text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
