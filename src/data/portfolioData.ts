@@ -41,7 +41,44 @@
  * ------------------------------------------------------------------------- */
 
 import type { PortfolioData } from '@/types'
-import profilePlaceholder from '@/assets/profile-placeholder.svg'
+import profileImage from '@/assets/images/sticker.png'
+
+/* ---------------------------------------------------------------------------
+ * 05. Other Projects — 스크린샷
+ * ------------------------------------------------------------------------- */
+import solariverWMain from '@/assets/images/solariver/w_main.png'
+import solariverWPwDayD from '@/assets/images/solariver/w_pw_day_d.png'
+import solariverWPwDayG from '@/assets/images/solariver/w_pw_day_g.png'
+import solariverWReInv from '@/assets/images/solariver/w_re_inv.png'
+import solariverMLogin from '@/assets/images/solariver/m_login.png'
+import solariverMCreate from '@/assets/images/solariver/m_create.png'
+import solariverMModule from '@/assets/images/solariver/m_module.png'
+
+import nremsMain from '@/assets/images/nrems/nrems_main.png'
+import nremsLogin from '@/assets/images/nrems/nrems_login.png'
+import nremsG1 from '@/assets/images/nrems/nrems_g1.png'
+import nremsG2 from '@/assets/images/nrems/nrems_g2.png'
+
+import media153Palgongsan from '@/assets/images/project/153/palgongsan.jpeg'
+import media153Donga from '@/assets/images/project/153/donga.jpeg'
+import media153Apartment1 from '@/assets/images/project/153/apartment1.jpeg'
+import media153Apartment2 from '@/assets/images/project/153/apartment2.jpeg'
+
+import potWeb from '@/assets/images/project/personal/pot-web.png'
+import recurringTablet from '@/assets/images/project/personal/recurring-tablet.png'
+import recurringApp from '@/assets/images/project/personal/recurring-app.png'
+
+import cartWeb from '@/assets/images/project/LlistWithCart-web.png'
+import cartTablet from '@/assets/images/project/LlistWithCart-tablet.png'
+import cartApp from '@/assets/images/project/LlistWithCart-app.png'
+
+import enterWeb from '@/assets/images/project/Enterainment-web.png'
+import enterApp from '@/assets/images/project/Enterainment-app.png'
+
+import crowdWeb from '@/assets/images/project/Crowdfunding-web.png'
+import crowdApp from '@/assets/images/project/Crowdfunding-app.png'
+
+import sunnysideWeb from '@/assets/images/project/Sunnyside-web.png'
 
 /* ---------------------------------------------------------------------------
  * 01 / 02. 프로필 · Hero · About Me
@@ -139,9 +176,7 @@ const profile: PortfolioData['profile'] = {
   location: 'Seoul, Korea',
   email: 'wjdtjr92@naver.com', // TODO(확인 필요): 공개용 이메일로 교체할지 결정
 
-  // TODO: src/assets/profile.jpg 를 추가하고 아래를 교체
-  //   import profileImage from '@/assets/profile.jpg'
-  avatar: profilePlaceholder,
+  avatar: profileImage,
 
   // 이력서는 public/ 에 둔다 (이유는 src/assets/README.md 참고)
   resumeUrl: '/resume.pdf',
@@ -913,6 +948,8 @@ const timeline: PortfolioData['timeline'] = [
  * 05. Other Projects
  * ---------------------------------------------------------------------------
  * ⚠️ 경력기술서에서 확인된 것만 남겼습니다. 시간 역순.
+ * 뒤 5개는 Frontend Mentor 챌린지(개인 학습)로, role에 출처를 명시해
+ * 재직 프로젝트와 섞여 실무로 오해되지 않게 한다.
  * ========================================================================= */
 const projects: PortfolioData['projects'] = [
   {
@@ -931,6 +968,15 @@ const projects: PortfolioData['projects'] = [
     ],
     tech: ['PHP', 'MySQL', 'AJAX', 'Android Hybrid', 'AmCharts'],
     links: [],
+    images: [
+      { src: solariverWMain, device: 'web' },
+      { src: solariverMLogin, device: 'mobile' },
+      { src: solariverWReInv, device: 'web' },
+      { src: solariverMCreate, device: 'mobile' },
+      { src: solariverWPwDayD, device: 'web' },
+      { src: solariverWPwDayG, device: 'web' },
+      { src: solariverMModule, device: 'mobile' },
+    ],
   },
   {
     id: 'remp-monitoring-renewal',
@@ -948,6 +994,12 @@ const projects: PortfolioData['projects'] = [
     ],
     tech: ['PHP', 'MySQL', 'AJAX', 'Android Hybrid', 'AmCharts'],
     links: [],
+    images: [
+      { src: nremsMain, device: 'mobile' },
+      { src: nremsLogin, device: 'mobile' },
+      { src: nremsG1, device: 'mobile' },
+      { src: nremsG2, device: 'mobile' },
+    ],
   },
   {
     id: '153media-agency-sites',
@@ -965,6 +1017,12 @@ const projects: PortfolioData['projects'] = [
     ],
     tech: ['HTML5', 'CSS3', 'PHP', 'MySQL', 'JavaScript', 'jQuery', 'AJAX'],
     links: [],
+    images: [
+      { src: media153Palgongsan, device: 'web' },
+      { src: media153Donga, device: 'web' },
+      { src: media153Apartment1, device: 'web' },
+      { src: media153Apartment2, device: 'web' },
+    ],
   },
   {
     id: 'halfline-sports-community',
@@ -982,6 +1040,131 @@ const projects: PortfolioData['projects'] = [
     ],
     tech: ['PHP', 'ASP', 'MySQL', 'MS-SQL', 'JavaScript', 'jQuery', 'AJAX'],
     links: [],
+  },
+  {
+    id: 'personal-finance-app',
+    title: 'Personal Finance App',
+    subtitle: '종합 자산 관리 및 예산 편성 기능을 제공하는 개인 금융 관리 웹 서비스',
+    period: '2025.01.23 – 2025.02.10',
+    description:
+      '예산·자산 CRUD, 실시간 데이터 동기화, 무한 스크롤, 반응형 디자인을 구현했습니다.',
+    role: 'Frontend Mentor 챌린지 (팀) — Redux 기반 상태 관리와 Firebase 데이터 퍼시스턴스 담당',
+    highlights: [
+      'Redux Toolkit으로 Pot(자산) 상태를 전역화 — 복잡한 props drilling을 막고 데이터 일관성 유지',
+      'Intersection Observer 기반 무한 스크롤 — 대량 청구서 리스트의 초기 로딩과 브라우저 부하를 절감',
+      'Firebase Firestore 비동기 통신을 공통 모듈로 추상화 — 팀 리팩토링 과정에서 유지보수성 향상',
+      'Custom Hook 기반 알림 시스템 — Toast UI에 CRUD 피드백을 연결해 작업 상태를 명확히 전달',
+    ],
+    tech: ['React', 'Redux Toolkit', 'Firebase', 'Tailwind CSS'],
+    links: [
+      { type: 'demo', url: 'https://toy-personal-finance.web.app/' },
+      {
+        type: 'github',
+        url: 'https://github.com/Bang04/frontend-mentor-challenges/tree/b6b7812cf3b339931a81d192c73b989b73ff100a/personal-finance-app',
+      },
+    ],
+    images: [
+      { src: potWeb, device: 'web' },
+      { src: recurringTablet, device: 'tablet' },
+      { src: recurringApp, device: 'mobile' },
+    ],
+  },
+  {
+    id: 'product-list-with-cart',
+    title: 'Product List with Cart',
+    subtitle: '실시간 장바구니 연동 및 주문 프로세스를 경험할 수 있는 커머스 웹 앱',
+    period: '2025.02.27 – 2025.03.12',
+    description:
+      '상태 기반 장바구니, 실시간 수량 계산, 주문 확인 시스템을 구현했습니다.',
+    role: 'Frontend Mentor 챌린지 (개인) — TypeScript 데이터 모델링과 반응형 UI 개발',
+    highlights: [
+      'Redux로 장바구니 상태 동기화 — 추가·삭제·수량 변경 시 합계 금액이 실시간으로 반영되는 데이터 흐름 구현',
+      '재고 수량 제한, 장바구니 비우기 등 실제 커머스 플로우를 고려한 유효성 검증·예외 처리',
+      'Bulma CSS 기반 모듈형 스타일링 — 클래스 기반 스타일 정의로 가독성 높은 UI 코드 작성',
+    ],
+    tech: ['React', 'TypeScript', 'Redux', 'Bulma'],
+    links: [
+      { type: 'demo', url: 'https://b-dessert.vercel.app/' },
+      {
+        type: 'github',
+        url: 'https://github.com/Bang04/frontend-mentor-solo/tree/a8f24fc04ac8e7788a8ec5fb985f1f430d8d54ac/product-list-with-cart-main',
+      },
+    ],
+    images: [
+      { src: cartWeb, device: 'web' },
+      { src: cartTablet, device: 'tablet' },
+      { src: cartApp, device: 'mobile' },
+    ],
+  },
+  {
+    id: 'entertainment-webapp',
+    title: 'Entertainment Web App',
+    subtitle: '영화 및 TV 시리즈 탐색과 개인화된 북마크 기능을 제공하는 플랫폼',
+    period: '2025.01.23 – 2025.02.10',
+    description: '커스텀 슬라이더, 북마크 시스템, 복합 검색 기능을 구현했습니다.',
+    role: 'Frontend Mentor 챌린지 (팀) — 외부 의존성 없는 핵심 UI 컴포넌트와 북마크 상태 관리 담당',
+    highlights: [
+      '`useRef`와 상태만으로 만든 순수 React 커스텀 슬라이더 — 외부 라이브러리 없이 패키지 경량화',
+      'Redux 기반 북마크 동기화 — 여러 페이지에서 같은 콘텐츠의 북마크 상태가 즉시 연동되도록 설계',
+      'CSS Grid 기반 반응형 레이아웃 — 다양한 해상도에서 콘텐츠 가독성 확보',
+    ],
+    tech: ['React', 'TypeScript', 'Redux', 'Styled Components'],
+    links: [
+      {
+        type: 'github',
+        url: 'https://github.com/Bang04/frontend-mentor-challenges/tree/b6b7812cf3b339931a81d192c73b989b73ff100a/entertainment-webapp',
+      },
+    ],
+    images: [
+      { src: enterWeb, device: 'web' },
+      { src: enterApp, device: 'mobile' },
+    ],
+  },
+  {
+    id: 'crowdfunding-product-page',
+    title: 'Crowdfunding Product Page',
+    subtitle: '실시간 펀딩 현황 업데이트 기능을 갖춘 제품 크라우드 펀딩 페이지',
+    period: '2025.02.10 – 2025.02.19',
+    description: '동적 진행률 바, 실시간 모금액 업데이트, 후원 모달을 구현했습니다.',
+    role: 'Frontend Mentor 챌린지 (팀) — 상태 변화 시각화와 모바일 인터랙션 UI 담당',
+    highlights: [
+      '후원 성공 시 모금액과 진행률 바가 애니메이션과 함께 즉시 업데이트되도록 로직 구성',
+      '모바일 환경을 고려한 접근성 있는 햄버거 메뉴·네비게이션·모달 인터랙션 구현',
+      '다양한 후원 플랜(Pledge)을 단일 공통 컴포넌트로 구조화 — 코드 중복 최소화',
+    ],
+    tech: ['React', 'Redux', 'Bulma'],
+    links: [
+      {
+        type: 'github',
+        url: 'https://github.com/Bang04/frontend-mentor-challenges/tree/b6b7812cf3b339931a81d192c73b989b73ff100a/crowdfunding-product-page',
+      },
+    ],
+    images: [
+      { src: crowdWeb, device: 'web' },
+      { src: crowdApp, device: 'mobile' },
+    ],
+  },
+  {
+    id: 'agency-landing-page',
+    title: 'Agency Landing Page',
+    subtitle: '심미적 디자인과 퍼포먼스를 고려한 기업 홍보용 반응형 랜딩 페이지',
+    period: '2025.06.17 – 2025.06.23',
+    description: '모던 UI 퍼블리싱, 시맨틱 마크업, 완전 반응형 대응을 구현했습니다.',
+    role: 'Frontend Mentor 챌린지 (개인) — 디자인 시스템 기반 UI 퍼블리싱과 Tailwind 반응형 코드 작성',
+    highlights: [
+      'Tailwind CSS 유틸리티 클래스로 스타일 코드량을 줄이면서 디자인 일관성 유지',
+      '시맨틱 마크업 준수 — 검색 엔진 최적화와 웹 접근성을 고려한 HTML 구조 설계',
+      '데스크탑·태블릿·모바일에 최적화된 레이아웃 전환 구현',
+    ],
+    tech: ['React', 'Tailwind CSS', 'JavaScript'],
+    links: [
+      { type: 'demo', url: 'https://b-sunnyside.vercel.app' },
+      {
+        type: 'github',
+        url: 'https://github.com/Bang04/frontend-mentor-solo/tree/a8f24fc04ac8e7788a8ec5fb985f1f430d8d54ac/sunnyside-agency-landing-page',
+      },
+    ],
+    images: [{ src: sunnysideWeb, device: 'web' }],
   },
 ]
 

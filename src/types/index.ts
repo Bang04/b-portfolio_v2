@@ -458,6 +458,12 @@ export interface PerfMetric {
  * 07. Other Projects
  * ========================================================================= */
 
+/** 스크린샷 하나. device가 곧 프레임·라벨을 결정한다. */
+export interface ProjectShot {
+  src: string
+  device: 'web' | 'tablet' | 'mobile'
+}
+
 export interface Project {
   id: string
   title: string
@@ -475,6 +481,12 @@ export interface Project {
   highlights: string[]
   tech: string[]
   links: ProjectLink[]
+  /**
+   * 반응형 스크린샷. 프로젝트마다 촬영된 디바이스 조합이 달라
+   * (웹만 있는 것도, 웹·태블릿·모바일 세 장 다 있는 것도 있다) 개수를
+   * 고정하지 않는다. 없으면(경력 초기 프로젝트 등) 갤러리 자체를 렌더링하지 않는다.
+   */
+  images?: ProjectShot[]
 }
 
 /* ===========================================================================
