@@ -1,6 +1,8 @@
 import { Info, Lightbulb } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { timeline } from '@/data/portfolioData'
 import { Section } from '@/components/common/Section'
+import { REVEAL_EASE, REVEAL_VIEWPORT } from '@/components/common/Reveal'
 import type { TimelineWeek } from '@/types'
 
 /**
@@ -22,7 +24,16 @@ import type { TimelineWeek } from '@/types'
 function WeekCard({ week }: { week: TimelineWeek }) {
   return (
     // relative + pl: 왼쪽 레일(부모의 border-l) 바깥으로 점을 걸치기 위한 기준점
-    <li className="relative pb-10 pl-8 last:pb-0 sm:pl-10">
+    // motion.li: 6주치 카드가 세로로 길게 늘어서 있어, 전부 한 번에 보여주면
+    // 스크롤이 그냥 문서 읽기가 된다. 카드가 뷰포트에 들어올 때마다 한 번씩
+    // 떠오르게 해 "한 주 한 주 지나간다"는 리듬을 스크롤 자체에 실었다.
+    <motion.li
+      className="relative pb-10 pl-8 last:pb-0 sm:pl-10"
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={REVEAL_VIEWPORT}
+      transition={{ duration: 0.55, ease: REVEAL_EASE }}
+    >
       {/* 타임라인 점 -----------------------------------------------------
           -left-[7px]: 부모의 1px 레일 위에 14px 점의 중심을 맞춘다.
           (레일 두께 1 - 점 지름 14) / 2 = -6.5 → 반올림 -7 */}
@@ -83,7 +94,7 @@ function WeekCard({ week }: { week: TimelineWeek }) {
           <span>{week.note}</span>
         </p>
       )}
-    </li>
+    </motion.li>
   )
 }
 
