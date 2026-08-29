@@ -16,15 +16,25 @@ const KIND_META: Record<
   award: { icon: Award, label: '수상' },
 }
 
-/** 기간 표기: end 가 없으면 "현재" */
+/**
+ * 기간 표기.
+ * 자격·수상은 원래 "기간"이 아니라 취득/수상 시점 하나뿐이라, end가 없으면
+ * "진행 중"이 아니라 그 시점 자체가 전부다 — start만 보여준다.
+ * work·education·training은 end가 없으면 지금도 진행 중이라는 뜻이므로 "현재"로 표기한다.
+ */
 function formatPeriod(item: ExperienceItem): string {
+  if (!item.end && (item.kind === 'certificate' || item.kind === 'award')) {
+    return item.start
+  }
   return `${item.start} – ${item.end ?? '현재'}`
 }
 
 function TimelineItem({ item }: { item: ExperienceItem }) {
   const meta = KIND_META[item.kind]
   const Icon = meta.icon
-  const isCurrent = !item.end
+  // "재직 중" 배지는 경력에만 의미가 있다. 자격증·수상처럼 end가 원래
+  // 없는 항목까지 !item.end로 판정하면 전부 "재직 중"으로 잘못 표시된다.
+  const isCurrent = item.kind === 'work' && !item.end
 
   return (
     // `group` 을 붙여두면 자식에서 이 <li>의 상태를 참조할 수 있다.
