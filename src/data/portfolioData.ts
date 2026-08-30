@@ -220,7 +220,6 @@ const profile: PortfolioData['profile'] = {
  *   준 다음 개인 프로젝트를 보여주는 순서가 낫다고 판단해서다.
  * ------------------------------------------------------------------------- */
 const nav: PortfolioData['nav'] = [
-  { id: 'about', label: 'About' },
   { id: 'project', label: 'Project' },
   { id: 'experience', label: 'Experience' },
   { id: 'other-projects', label: 'Others' },
@@ -509,7 +508,7 @@ const deepDives: PortfolioData['featuredProject']['deepDives'] = [
       delta: '−99.9%',
     },
     learned:
-      '성능 문제의 답이 대개 "더 빠르게"가 아니라 "덜 하게"에 있다는 걸 배웠습니다. 빠르게 그리는 방법을 찾는 데 시간을 썼는데, 정작 답은 안 그려도 되는 것을 찾아내는 쪽에 있었습니다.',
+      '처음엔 2,889개를 어떻게 더 빨리 그릴지 고민했습니다. 하지만 진짜 답은 속도가 아니라, 2,887개는 애초에 그릴 필요가 없다는 걸 알아채는 것이었습니다.',
     keywords: ['React.memo', 'useRef 참조 고정', '델타 갱신', 'Marker3D'],
   },
   {
@@ -566,6 +565,26 @@ const deepDives: PortfolioData['featuredProject']['deepDives'] = [
       '"이건 건드리면 안 된다"가 제 기억에만 있으면 제가 자리를 비운 순간 규칙은 없는 것과 같습니다. 문서로 옮겨두는 것까지가 개발이더군요.',
     keywords: ['feature-first', '경로 스코프 규칙', '단일 접점', '변경 영향 범위'],
   },
+  {
+  id: 'dd-verify-alternative',
+  title: '"검증된 대안"이라던 API도 다시 확인한 이유',
+  tag: '검증',
+  problem:
+    '재조사 시 이전 회차 사진을 새 회차로 옮기는 "이관" 기능이 실제로는 이동(UPDATE) 방식으로 구현돼 있어, 재조사가 반복될 때마다 원 회차 사진이 사라졌습니다. 사용자 신고 2건이 같은 원인으로 확인됐고, 한 지구에서는 14장 중 6장이 소실된 상태였습니다. 서버 쪽은 이미 대안 API(`reassign`)를 안내했지만, 그 설명만으로는 실제 동작 방식(복사인지 이동인지)까지 보장되지 않았습니다.',
+  approach:
+    '문서를 그대로 믿는 대신 실제 slope·photo 레코드를 대상으로 대안 API를 직접 호출해 전/후 상태를 비교했고, 그 결과 대안 역시 이동 방식이라는 걸 확인한 뒤 기각했습니다. 대신 사진을 원본 그대로 재업로드해 새 회차에 별도 행을 생성하도록 재설계했습니다. 이후 이 프로젝트의 커밋 300여 건을 정리해 이력서·회고 자료를 쓸 때도 같은 원칙을 적용했습니다 — AI로 커밋을 태그·근거 기준 1차 분류해 후보를 좁혔지만, 이 사진 버그처럼 핵심 판단이 걸린 항목은 AI 요약을 그대로 쓰지 않고 직접 재현해 확인했고, 수치 근거가 없는 항목은 AI 응답에 등장했더라도 "확인 필요"로 분리해 회고에서 제외했습니다.',
+  result:
+    '재조사가 반복돼도 원 회차 사진이 보존되도록 재발을 구조적으로 차단했습니다(다만 이미 소실된 데이터는 이 변경만으로 복구되지 않아 백엔드 백필이 필요한 잔여 이슈입니다). 같은 검증 원칙을 적용한 회고 문서 역시 과장된 수치 없이 정리됐습니다.',
+  metric: {
+    label: '재조사 시 사진 보존',
+    before: '이동(UPDATE) — 원 회차 삭제',
+    after: '재업로드(생성) — 원 회차 보존',
+    delta: '지구 1건 14장 중 6장 소실 확인 후 재발 차단',
+  },
+  learned:
+    '"검증됐다"는 말과 "제가 검증했다"는 사실은 다르다는 걸 배웠습니다. 남이 제시한 대안이든 AI가 정리한 요약이든, 제 이름으로 내보내는 결론은 직접 재현해본 것만 남겼습니다.',
+  keywords: ['대안 API 실측 검증', 'AI 초안 재검증', '확인 필요 표기', '데이터 무결성'],
+},
 ]
 
 /* --- 진행 타임라인 (구 별도 Timeline 섹션) ----------------------------------
@@ -614,6 +633,14 @@ const turningPoints: PortfolioData['featuredProject']['turningPoints'] = [
     description:
       '요청은 성공하는데 필드가 사라지는 저장 API를 발견해 스펙 대조표로 payload를 재설계했습니다.',
     link: { label: '딥다이브 보기', href: '#dd-destructive-api' },
+  },
+  {
+    id: 't-08-mid',
+    month: '8월 중',
+    title: '검증 없이는 믿지 않기',
+    description:
+      '사진 이관 버그를 서버가 준 대안 API까지 직접 검증해 기각하고, 같은 원칙으로 300여 개 커밋을 정리한 회고 문서를 남겼습니다.',
+    link: { label: '딥다이브 보기', href: '#dd-verify-alternative' },
   },
   {
     id: 't-08-late',
@@ -690,6 +717,13 @@ const featuredProject: PortfolioData['featuredProject'] = {
         description:
           '렌더 최적화를 포함한 모든 변경을 도메인 폴더 안에서 끝냈습니다. 다른 네 플랫폼에 영향 없음이 구조적으로 보장됩니다.',
       },
+      {
+        id: 'out-verify',
+        label: '재조사 시 사진 보존',
+        value: '이동 → 재업로드 방식',
+        description:
+          '서버가 제시한 대안 API도 직접 실측 검증해 같은 결함을 확인 후 기각하고, 원본 재업로드로 재설계해 재발을 구조적으로 차단했습니다.',
+      },
     ],
   },
 
@@ -715,11 +749,6 @@ const featuredProject: PortfolioData['featuredProject'] = {
       kind: 'scope',
       title: '데이터 정규화',
       note: '백엔드에서 처리합니다. 제가 한 것은 데이터 명세 작성과 화면 모델 정의까지입니다.',
-    },
-    {
-      kind: 'unfinished',
-      title: '사진 업로드',
-      note: '현재 보류 단계로, 구현되지 않았습니다.',
     },
     {
       kind: 'unfinished',

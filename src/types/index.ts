@@ -329,7 +329,7 @@ export interface ProjectLimit {
 }
 
 /** 딥다이브 태그. 사건의 종류를 드러내는 한 단어. */
-export type DeepDiveTag = '성능' | '데이터' | '구조'
+export type DeepDiveTag = '성능' | '데이터' | '구조' | '검증'
 
 /**
  * 딥다이브 하나 = 면접 질문 하나.

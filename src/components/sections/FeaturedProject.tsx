@@ -548,12 +548,14 @@ export function FeaturedProject() {
             </motion.div>
           ))}
         </dl>
-        <a
-          href="#project-result"
-          className="text-accent-600 dark:text-accent-400 mt-4 inline-block text-[12px] font-medium hover:underline"
-        >
-          근거 자세히 보기 → 02 프로젝트 결과
-        </a>
+        {false && (
+          <a
+            href="#project-result"
+            className="text-accent-600 dark:text-accent-400 mt-4 inline-block text-[12px] font-medium hover:underline"
+          >
+            근거 자세히 보기 → 02 프로젝트 결과
+          </a>
+        )}
 
         {links.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-2 border-t border-zinc-100 pt-5 dark:border-zinc-800">
@@ -621,57 +623,59 @@ export function FeaturedProject() {
         </div>
       </SubSection>
 
-      {/* ── 02. 프로젝트 결과 ─────────────────────────────────────────── */}
-      <div id="project-result" className="scroll-mt-32">
-        <SubSection
-          step="02"
-          title="프로젝트 결과"
-          description="헤더의 프로젝트 목표에서 세운 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
-        >
-        <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
-          {result.summary}
-        </p>
+      {/* ── 02. 프로젝트 결과 — 임시 숨김 처리 ───────────────────────── */}
+      {false && (
+        <div id="project-result" className="mt-16 scroll-mt-32">
+          <SubSection
+            step="02"
+            title="프로젝트 결과"
+            description="헤더의 프로젝트 목표에서 세운 판정 기준에 대한 답입니다. 헤더의 요약 숫자는 여기 outcomes와 같은 데이터입니다."
+          >
+            <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
+              {result.summary}
+            </p>
 
-        {/* 지표 목록 -----------------------------------------------------
-            before → after 형태를 값 안에 그대로 넣었다.
-            "after"만 크게 쓰면 숫자가 커 보이지만 검증은 불가능해진다.
-            개선은 언제나 도달점이 아니라 차이다. */}
-        <dl className="grid gap-4 sm:grid-cols-2">
-          {result.outcomes.map((outcome, index) => (
-            <motion.div
-              key={outcome.id}
-              className="card p-5"
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={REVEAL_VIEWPORT}
-              transition={{ duration: 0.5, delay: (index % 2) * 0.1, ease: REVEAL_EASE }}
+            {/* 지표 목록 -----------------------------------------------------
+                before → after 형태를 값 안에 그대로 넣었다.
+                "after"만 크게 쓰면 숫자가 커 보이지만 검증은 불가능해진다.
+                개선은 언제나 도달점이 아니라 차이다. */}
+            <dl className="grid gap-4 sm:grid-cols-2">
+              {result.outcomes.map((outcome, index) => (
+                <motion.div
+                  key={outcome.id}
+                  className="card p-5"
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={REVEAL_VIEWPORT}
+                  transition={{ duration: 0.5, delay: (index % 2) * 0.1, ease: REVEAL_EASE }}
+                >
+                  <dt className="text-[12px] font-medium text-zinc-500">
+                    {outcome.label}
+                  </dt>
+                  <dd>
+                    <p className="text-accent-600 dark:text-accent-400 mt-1.5 font-mono text-[17px] font-bold tabular-nums">
+                      <CountUp text={outcome.value} />
+                    </p>
+                    <p className="mt-2.5 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {outcome.description}
+                    </p>
+                  </dd>
+                </motion.div>
+              ))}
+            </dl>
+
+            {/* "무엇을 배웠나"의 회고는 여기 없다 — About의 작업 원칙이
+                숫자 대신 판단 기준으로 전담한다. 같은 교훈을 두 이름으로
+                반복하지 않기 위한 결정이다. */}
+            <a
+              href="#about"
+              className="text-accent-600 dark:text-accent-400 mt-6 inline-block text-[12px] font-medium hover:underline"
             >
-              <dt className="text-[12px] font-medium text-zinc-500">
-                {outcome.label}
-              </dt>
-              <dd>
-                <p className="text-accent-600 dark:text-accent-400 mt-1.5 font-mono text-[17px] font-bold tabular-nums">
-                  <CountUp text={outcome.value} />
-                </p>
-                <p className="mt-2.5 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {outcome.description}
-                </p>
-              </dd>
-            </motion.div>
-          ))}
-        </dl>
-
-        {/* "무엇을 배웠나"의 회고는 여기 없다 — About의 작업 원칙이
-            숫자 대신 판단 기준으로 전담한다. 같은 교훈을 두 이름으로
-            반복하지 않기 위한 결정이다. */}
-        <a
-          href="#about"
-          className="text-accent-600 dark:text-accent-400 mt-6 inline-block text-[12px] font-medium hover:underline"
-        >
-          이 결과에서 무엇을 배웠는지 → About · 일하는 방식
-        </a>
-        </SubSection>
-      </div>
+              이 결과에서 무엇을 배웠는지 → About · 일하는 방식
+            </a>
+          </SubSection>
+        </div>
+      )}
 
       {/* ── 심화: 딥다이브 · 아키텍처 · 하지 못한 것들 ─────────────────
           step 번호를 주지 않은 이유: 위 01~02는 프로젝트를 이해하는 데
@@ -689,7 +693,7 @@ export function FeaturedProject() {
           있어 하나로 합쳤다. */}
       <SubSection
         title="문제 해결 딥다이브"
-        description="총 4건. 제목 옆 태그로 먼저 스캔하고, 필요한 카드만 펼쳐서 확인하세요. 수치로 검증되는 사건에는 개선 전/후 지표가 함께 붙습니다."
+        description={`총 ${deepDives.length}건. 제목 옆 태그로 먼저 스캔하고, 필요한 카드만 펼쳐서 확인하세요. 수치로 검증되는 사건에는 개선 전/후 지표가 함께 붙습니다.`}
       >
         <ol className="space-y-3">
           {deepDives.map((deepDive, index) => (
@@ -703,37 +707,40 @@ export function FeaturedProject() {
         </ol>
       </SubSection>
 
-      <SubSection
-        title="프로젝트 아키텍처"
-        description="무엇을 썼는지가 아니라, 왜 그렇게 나눴고 그 대가로 무엇을 포기했는지를 적었습니다."
-      >
-        <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
-          {architecture.summary}
-        </p>
+      {/* 프로젝트 아키텍처 · Architecture Diagram — 임시 숨김 처리 */}
+      {false && (
+        <SubSection
+          title="프로젝트 아키텍처"
+          description="무엇을 썼는지가 아니라, 왜 그렇게 나눴고 그 대가로 무엇을 포기했는지를 적었습니다."
+        >
+          <p className="mb-6 text-[14.5px] leading-[1.85] text-zinc-600 dark:text-zinc-400">
+            {architecture.summary}
+          </p>
 
-        <div className="space-y-3">
-          {architecture.layers.map((layer, index) => (
-            <Reveal key={layer.id}>
-              <ArchitectureCard
-                layer={layer}
-                // 첫 카드만 펼쳐둔다 — "이건 열리는 카드"라는 신호를 주기 위해서.
-                defaultOpen={index === 0}
-              />
-            </Reveal>
-          ))}
-        </div>
+          <div className="space-y-3">
+            {architecture.layers.map((layer, index) => (
+              <Reveal key={layer.id}>
+                <ArchitectureCard
+                  layer={layer}
+                  // 첫 카드만 펼쳐둔다 — "이건 열리는 카드"라는 신호를 주기 위해서.
+                  defaultOpen={index === 0}
+                />
+              </Reveal>
+            ))}
+          </div>
 
-        <h4 className="mt-12 mb-1.5 text-base font-bold">Architecture Diagram</h4>
-        <p className="mb-5 text-[13.5px] leading-relaxed text-zinc-500">
-          이미지가 아니라 데이터로 정의했습니다. 다크모드에서 깨지지 않고, 구조가
-          바뀌면 배열 하나만 고치면 되며, 텍스트라서 검색과 스크린리더에도 잡힙니다.
-        </p>
-        <ArchitectureDiagram diagram={architecture.diagram} />
-      </SubSection>
+          <h4 className="mt-12 mb-1.5 text-base font-bold">Architecture Diagram</h4>
+          <p className="mb-5 text-[13.5px] leading-relaxed text-zinc-500">
+            이미지가 아니라 데이터로 정의했습니다. 다크모드에서 깨지지 않고, 구조가
+            바뀌면 배열 하나만 고치면 되며, 텍스트라서 검색과 스크린리더에도 잡힙니다.
+          </p>
+          <ArchitectureDiagram diagram={architecture.diagram} />
+        </SubSection>
+      )}
 
       <SubSection
         title="진행 타임라인"
-        description="6개 시점의 판단이 바뀐 지점만 남겼습니다. 자세한 이야기는 관련 딥다이브로 이어집니다."
+        description={`${turningPoints.length}개 시점의 판단이 바뀐 지점만 남겼습니다. 자세한 이야기는 관련 딥다이브로 이어집니다.`}
       >
         <ol>
           {turningPoints.map((point) => (

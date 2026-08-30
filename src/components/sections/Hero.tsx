@@ -1,6 +1,6 @@
-import { ArrowRight, Download, MapPin } from 'lucide-react'
+import { Download, MapPin } from 'lucide-react'
 import { profile } from '@/data/portfolioData'
-import { SOCIAL_ICONS } from '@/components/common/socialIcons'
+import { GithubIcon } from '@/components/common/BrandIcons'
 import { CountUp } from '@/components/common/CountUp'
 
 /**
@@ -20,7 +20,8 @@ import { CountUp } from '@/components/common/CountUp'
  * Hero가 팔아야 하는 건 산출물이 아니라 **판단의 방식**이다.
  */
 export function Hero() {
-  const { headline, oneLiner, heroIntro, keywords, cta, stats } = profile
+  const { headline, heroIntro, keywords, cta, stats } = profile
+  const github = profile.socials.find((social) => social.platform === 'github')
 
   return (
     // id="top" — 헤더 로고와 푸터 '맨 위로' 버튼의 앵커
@@ -73,38 +74,35 @@ export function Hero() {
             ))}
           </h1>
 
-          {/* 한 줄 자기소개 — 이름은 여기서 굵게 처리해 시선을 한 번 잡는다 */}
+          {/* 이름 — 굵게 처리해 시선을 한 번 잡는다 */}
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-zinc-600 dark:text-zinc-400">
             <span className="font-semibold text-zinc-900 dark:text-zinc-100">
               {profile.name}
             </span>
-            <span aria-hidden="true" className="mx-1.5 text-zinc-300 dark:text-zinc-700">
-              ·
-            </span>
-            {oneLiner}
           </p>
 
-          {/* 핵심 키워드 5개 ----------------------------------------------
-              label만 있으면 자기주장이고, proof가 붙으면 검증 가능한 주장이 된다.
-              "성능 최적화"라고 쓴 이력서는 수백 장이지만
-              "성능 최적화 · 2,889 → 2건"은 되묻게 만든다. 되묻는 순간이 기회다.
-
-              tabular-nums: 숫자 폭 고정. 2,889 같은 값에서 자릿수가 흔들리지 않게 한다. */}
-          <ul className="mt-7 flex flex-wrap gap-2">
-            {keywords.map((keyword) => (
-              <li
-                key={keyword.label}
-                className="rounded-xl border border-zinc-200 bg-white/60 px-3 py-2 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/50"
-              >
-                <span className="block text-[12.5px] leading-tight font-semibold text-zinc-800 dark:text-zinc-200">
-                  {keyword.label}
-                </span>
-                <span className="text-accent-600 dark:text-accent-400 mt-0.5 block font-mono text-[11px] leading-tight tabular-nums">
-                  {keyword.proof}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {/* 핵심 키워드 5개 — 임시 숨김 처리
+              바로 아래 "대표 숫자 3개"(stats)와 내용이 겹친다. 예를 들어 첫 카드
+              "렌더링 최적화 · 2,889 → 2건"은 stats의 "선택당 마커 재부착 · 2,889 → 2건"과
+              같은 사건을 가리킨다. 같은 근거를 같은 화면에서 두 번 보여줄 필요는 없으므로
+              stats만 남긴다. */}
+          {false && (
+            <ul className="mt-7 flex flex-wrap gap-2">
+              {keywords.map((keyword) => (
+                <li
+                  key={keyword.label}
+                  className="rounded-xl border border-zinc-200 bg-white/60 px-3 py-2 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/50"
+                >
+                  <span className="block text-[12.5px] leading-tight font-semibold text-zinc-800 dark:text-zinc-200">
+                    {keyword.label}
+                  </span>
+                  <span className="text-accent-600 dark:text-accent-400 mt-0.5 block font-mono text-[11px] leading-tight tabular-nums">
+                    {keyword.proof}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {/* 대표 숫자 3개 ---------------------------------------------------
               구 About 섹션의 숫자 지표를 옮겨왔다. About은 "어떻게 일하는가"만
@@ -143,24 +141,9 @@ export function Hero() {
           </ul>
 
           {/* Call To Action ------------------------------------------------
-              문구를 버튼 위에 둔 이유: 버튼 라벨만으로는 "왜 눌러야 하는지"를
-              말할 수 없다. 라벨은 동작을, 문장은 이유를 담당한다.
-
-              버튼은 주 1개 + 보조 1개로 고정한다.
+              버튼은 이력서 다운로드(주) + GitHub(보조) 둘로 고정한다.
               같은 무게의 버튼이 셋 이상이면 사용자는 아무것도 누르지 않는다. */}
-          <p className="mt-9 max-w-lg text-[13.5px] leading-relaxed text-zinc-500">
-            {cta.note}
-          </p>
-
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <a
-              href={cta.primary.href}
-              className="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition"
-            >
-              {cta.primary.label}
-              <ArrowRight size={16} aria-hidden="true" />
-            </a>
-
+          <div className="mt-9 flex flex-wrap items-center gap-3">
             <a
               href={cta.secondary.href}
               // download 속성: 브라우저가 새 탭에서 열지 않고 바로 내려받게 한다.
@@ -169,34 +152,24 @@ export function Hero() {
               download={
                 cta.secondary.download ? `${profile.name}_이력서.pdf` : undefined
               }
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-300 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              className="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition"
             >
               <Download size={16} aria-hidden="true" />
               {cta.secondary.label}
             </a>
-          </div>
 
-          {/* 소셜 링크 */}
-          <ul className="mt-8 flex items-center gap-2">
-            {profile.socials.map((social) => {
-              const Icon = SOCIAL_ICONS[social.platform]
-              const isMail = social.platform === 'email'
-              return (
-                <li key={social.platform}>
-                  <a
-                    href={social.url}
-                    target={isMail ? undefined : '_blank'}
-                    rel="noreferrer"
-                    aria-label={social.label}
-                    title={social.label}
-                    className="inline-flex size-10 items-center justify-center rounded-xl border border-zinc-200 text-zinc-500 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
-                  >
-                    <Icon size={18} />
-                  </a>
-                </li>
-              )
-            })}
-          </ul>
+            {github && (
+              <a
+                href={github.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-zinc-300 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              >
+                <GithubIcon size={16} />
+                {github.label}
+              </a>
+            )}
+          </div>
         </div>
 
         {/* ── 우측: 프로필 사진 ──

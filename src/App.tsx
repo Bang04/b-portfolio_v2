@@ -54,7 +54,8 @@ export default function App() {
           (헤더는 fixed라 문서 흐름에서 빠져 있다) */}
       <main id="main">
         <Hero />
-        <About />
+        {/* About — Hero(자기소개 3줄)와 겹쳐 임시 숨김 처리 */}
+        {false && <About />}
         <FeaturedProject />
         <Experience />
         <OtherProjects />
