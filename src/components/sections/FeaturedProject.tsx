@@ -23,6 +23,7 @@ import { CountUp } from '@/components/common/CountUp'
 import type { BrandIconProps } from '@/components/common/BrandIcons'
 import type {
   ArchitectureLayer,
+  AtAGlanceStat,
   DeepDive,
   ProjectLimit,
   ProjectLinkType,
@@ -428,6 +429,27 @@ function LimitsSection({ limits }: { limits: ProjectLimit[] }) {
   )
 }
 
+/**
+ * "한눈에 보기" 스탯 카드
+ * ---------------------------------------------------------------------------
+ * role.scope·result.outcomes에 흩어지기 쉬운 규모 숫자(커밋 수, 담당 파일 수,
+ * API 연동율, 협업 인원)를 헤더 바로 아래 한 블록으로 모은다. "규모가 어느
+ * 정도냐"는 초반 질문에 스크롤 없이 바로 답할 수 있게 하려는 목적이다.
+ */
+function AtAGlanceCard({ stat }: { stat: AtAGlanceStat }) {
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <dt className="text-[11.5px] font-medium text-zinc-500">{stat.label}</dt>
+      <dd className="text-accent-600 dark:text-accent-400 mt-1.5 font-mono text-lg font-bold tabular-nums">
+        <CountUp text={stat.value} />
+      </dd>
+      <dd className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">
+        {stat.description}
+      </dd>
+    </div>
+  )
+}
+
 export function FeaturedProject() {
   const {
     title,
@@ -437,6 +459,7 @@ export function FeaturedProject() {
     team,
     client,
     summary,
+    atAGlance,
     goals,
     role,
     techStack,
@@ -470,6 +493,21 @@ export function FeaturedProject() {
         <p className="mt-3 text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
           {summary}
         </p>
+
+        {/* 한눈에 보기 ----------------------------------------------------
+            git 로그·docs 기준으로 뽑은 규모 숫자를 스캔 가능한 카드로 먼저
+            보여준다. 아래 역할·목표 본문에서는 같은 숫자를 다시 쓰지 않는다. */}
+        <div className="mt-5 border-t border-zinc-100 pt-5 dark:border-zinc-800">
+          <p className="text-[15px] font-bold">한눈에 보기</p>
+          <p className="mt-1 text-[12.5px] leading-relaxed text-zinc-500">
+            {atAGlance.asOf} 기준, {atAGlance.note}
+          </p>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+            {atAGlance.stats.map((stat) => (
+              <AtAGlanceCard key={stat.id} stat={stat} />
+            ))}
+          </dl>
+        </div>
 
         {/* 기간 · 인원 · 담당범위 --------------------------------------
             인원을 밝히는 게 손해처럼 느껴질 수 있지만 반대다.
@@ -583,7 +621,7 @@ export function FeaturedProject() {
       <SubSection
         step="01"
         title="기술 스택"
-        description="이름만 나열하면 로고 모음일 뿐입니다. 각 항목에 이 프로젝트에서 무엇에 썼는지를 함께 적었습니다. 점선 표기는 부분 사용/학습 중인 항목입니다."
+        description="각 항목에 이 프로젝트에서 무엇에 썼는지를 함께 적었습니다. 점선 표기는 부분 사용/학습 중인 항목입니다."
       >
         <div className="grid gap-5 sm:grid-cols-2">
           {techStack.map((category) => {

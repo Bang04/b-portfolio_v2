@@ -312,6 +312,30 @@ export interface ProjectRole {
   scope: string
 }
 
+/** '한눈에 보기' 스탯 카드 하나 */
+export interface AtAGlanceStat {
+  id: string
+  label: string
+  /** 예: '387건'. 큰 글씨로 보여줄 값 */
+  value: string
+  /** 값의 근거·조건. 예: '전체 1,633건 중' */
+  description: string
+}
+
+/**
+ * 헤더 바로 아래 "한눈에 보기" 스탯 블록.
+ * ---------------------------------------------------------------------------
+ * role.scope·result.outcomes에 흩어진 숫자(커밋 수, API 연동율 등)를
+ * "규모가 어느 정도냐"는 질문에 바로 쓸 수 있는 한 곳으로 모은다.
+ * 여기 나온 숫자는 본문 다른 곳에서 다시 서술하지 않는다.
+ */
+export interface ProjectAtAGlance {
+  /** 수치를 집계한 기준일. 예: '2026-09-15' */
+  asOf: string
+  note: string
+  stats: AtAGlanceStat[]
+}
+
 /**
  * 하지 못한 것 · 담당하지 않은 것 하나.
  * ---------------------------------------------------------------------------
@@ -378,6 +402,7 @@ export interface FeaturedProject {
    *   techStack 무엇으로 했나
    *   result    그래서 뭐가 달라졌나
    */
+  atAGlance: ProjectAtAGlance
   goals: ProjectGoal[]
   role: ProjectRole
   techStack: SkillCategory[]
