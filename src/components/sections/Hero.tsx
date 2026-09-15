@@ -1,7 +1,8 @@
-import { Download, MapPin } from 'lucide-react'
+import { Download, Loader2, MapPin } from 'lucide-react'
 import { profile } from '@/data/portfolioData'
 import { GithubIcon } from '@/components/common/BrandIcons'
 import { CountUp } from '@/components/common/CountUp'
+import { usePortfolioPdfDownload } from '@/pdf/usePortfolioPdfDownload'
 
 /**
  * Hero — 첫 화면
@@ -22,6 +23,7 @@ import { CountUp } from '@/components/common/CountUp'
 export function Hero() {
   const { headline, heroIntro, keywords, cta, stats } = profile
   const github = profile.socials.find((social) => social.platform === 'github')
+  const { download: downloadPdf, status: pdfStatus } = usePortfolioPdfDownload()
 
   return (
     // id="top" — 헤더 로고와 푸터 '맨 위로' 버튼의 앵커
@@ -144,19 +146,26 @@ export function Hero() {
               버튼은 이력서 다운로드(주) + GitHub(보조) 둘로 고정한다.
               같은 무게의 버튼이 셋 이상이면 사용자는 아무것도 누르지 않는다. */}
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a
-              href={cta.secondary.href}
-              // download 속성: 브라우저가 새 탭에서 열지 않고 바로 내려받게 한다.
-              // 값을 주면 저장될 파일명을 지정할 수 있다.
-              // 파일명을 데이터에서 조립해 이름이 바뀌어도 따라오게 한다.
-              download={
-                cta.secondary.download ? `${profile.name}_이력서.pdf` : undefined
-              }
-              className="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition"
+            {/* PDF는 정적 파일이 아니라 portfolioData.ts로부터 클릭 시점에
+                생성된다(src/pdf). 데이터가 바뀌면 PDF 내용도 자동으로 따라온다. */}
+            <button
+              type="button"
+              onClick={downloadPdf}
+              disabled={pdfStatus === 'generating'}
+              className="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition disabled:cursor-wait disabled:opacity-70"
             >
-              <Download size={16} aria-hidden="true" />
-              {cta.secondary.label}
-            </a>
+              {pdfStatus === 'generating' ? (
+                <Loader2 size={16} aria-hidden="true" className="animate-spin" />
+              ) : (
+                <Download size={16} aria-hidden="true" />
+              )}
+              {pdfStatus === 'generating' ? '생성 중...' : cta.secondary.label}
+            </button>
+            {pdfStatus === 'error' && (
+              <span className="text-xs text-red-500">
+                PDF 생성에 실패했습니다. 다시 시도해주세요.
+              </span>
+            )}
 
             {github && (
               <a
